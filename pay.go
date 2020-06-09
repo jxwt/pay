@@ -44,10 +44,9 @@ func Register(req *RegisterRequest) (*RegisterResponse, error) {
 // 支付函数 .
 func DoPay(r *DoPayRequest) (interface{}, error) {
 	req, _ := json.Marshal(r)
-	data, _ := json.Marshal(req)
 	resp, err := http.Post(urlPay+":8091"+apiRegister,
 		"application/json",
-		strings.NewReader(string(data)))
+		strings.NewReader(string(req)))
 	if err != nil {
 		return nil, err
 	}
@@ -63,4 +62,21 @@ func DoPay(r *DoPayRequest) (interface{}, error) {
 		return "", err
 	}
 	return d.Message, nil
+}
+
+// GetIPAddr 获取本机内网地址
+func GetIPAddr() string {
+	addrs, err := net.InterfaceAddrs()
+	if err != nil {
+		return ""
+	}
+	for _, address := range addrs {
+		// 检查ip地址判断是否回环地址
+		if ipnet, ok := address.(*net.IPNet); ok && !ipnet.IP.IsLoopback() {
+			if ipnet.IP.To4() != nil {
+				return ipnet.IP.String()
+			}
+		}
+	}
+	return ""
 }

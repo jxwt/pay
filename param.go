@@ -58,3 +58,12 @@ type PayItem struct {
 	AliPayAppId      string
 	AliPayPartnerId  string
 }
+
+// SendCallBackNotify 回调通知
+type SendCallBackNotify struct {
+	TradeNumber   string  `json:"tradeNumber"`   // 商户单号
+	Money         float64 `json:"money"`         // 金额
+	OrderID       int     `json:"orderID"`       // 订单ID
+	CashChannelID int     `json:"cashChannelID"` // 支付方式
+	ConfirmAt     string  `json:"confirmAt"`     // 支付完成时间
+}
