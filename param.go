@@ -7,7 +7,7 @@ const (
 
 // 内部支付域名
 const (
-	urlPay = "pay.com"
+	urlPay = "http://jxpay.com"
 )
 
 // CommonResponse beego框架统一返回结构
@@ -49,6 +49,7 @@ type PayItem struct {
 	TenantId         int
 	WxAppId          string
 	WxMchId          string
+	WxSubMchId 		 string
 	WxKey            string
 	WxPrivateKey     string
 	WxCertPEM        string

@@ -14,6 +14,7 @@ const (
 	CashChannelAliCodePay = 32 // 支付宝扫码支付
 	// 其他
 	CashChannelDepositPay = 50 // 钱包支付
+	CashChannelCash		  = 51 // 现金
 )
 
 // CashChannelRemarks 支付途径描述
