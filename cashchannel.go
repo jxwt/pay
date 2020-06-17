@@ -21,7 +21,7 @@ const (
 )
 
 // CashChannelRemarks 支付途径描述
-var CashChannelRemarks = map[uint]string{
+var CashChannelRemarks = map[int]string{
 	CashChannelWxAppPay:    "微信支付",
 	CashChannelAliAppPay:   "支付宝",
 	CashChannelDepositPay:  "钱包支付",

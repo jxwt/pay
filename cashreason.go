@@ -30,7 +30,7 @@ const (
 )
 
 // CashReasonRemarks 支付原因描述
-var CashReasonRemarks = map[uint]string{
+var CashReasonRemarks = map[int]string{
 	CashReasonOrder:                "支付订单",
 	CashReasonRecharge:             "用户充值",
 	CashReasonReservation:          "预约支付",
