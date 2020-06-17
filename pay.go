@@ -44,7 +44,7 @@ func Register(req *RegisterRequest) (*RegisterResponse, error) {
 // 支付函数 .
 func DoPay(r *DoPayRequest) (interface{}, error) {
 	req, _ := json.Marshal(r)
-	resp, err := http.Post(urlPay+":8091"+apiRegister,
+	resp, err := http.Post(urlPay+":8091"+apiDoPay,
 		"application/json",
 		strings.NewReader(string(req)))
 	if err != nil {

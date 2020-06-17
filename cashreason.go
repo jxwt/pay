@@ -15,10 +15,18 @@ const (
 	CashReasonBillPackHourFund     = 106 // 包时订单支付
 	CashReasonAppointShareOrderPay = 107 // 预约共享车位订单支付
 	CashReasonMarginFund           = 108 // 保证金订单
+	CashReasonNotPay               = 109 // 支付欠款订单
+	CashReasonPrePay               = 110 // 预支付订单
 
 	// 通用出账原因
 	CashReasonOrderRefund = 10001 // 退款
 	CashReasonCashOut     = 10002 // 提现,转账
+
+	// parking_cloud 退款
+	CashReasonReservationRefund   = 20001 // 预约退款
+	CashReasonBillPackPlateRefund = 20002 // 包车牌退款
+	CashReasonBillPackSpotRefund  = 20003 // 包车位退款
+	CashReasonMarginRefund        = 20004 // 保证金退款
 )
 
 // CashReasonRemarks 支付原因描述
@@ -33,6 +41,12 @@ var CashReasonRemarks = map[uint]string{
 	CashReasonBillPackHourFund:     "包时订单支付",
 	CashReasonAppointShareOrderPay: "预约共享车位订单支付",
 	CashReasonMarginFund:           "保证金支付",
+	CashReasonNotPay:               "支付欠款订单",
+	CashReasonPrePay:               "预支付订单",
 	CashReasonOrderRefund:          "退款",
 	CashReasonCashOut:              "提现转账",
+	CashReasonReservationRefund:    "预约退款",
+	CashReasonBillPackPlateRefund:  "包车牌退款",
+	CashReasonBillPackSpotRefund:   "包车位退款",
+	CashReasonMarginRefund:         "保证金退款",
 }

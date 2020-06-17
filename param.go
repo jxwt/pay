@@ -49,7 +49,7 @@ type PayItem struct {
 	TenantId         int
 	WxAppId          string
 	WxMchId          string
-	WxSubMchId 		 string
+	WxSubMchId       string
 	WxKey            string
 	WxPrivateKey     string
 	WxCertPEM        string
