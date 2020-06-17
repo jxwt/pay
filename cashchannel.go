@@ -31,6 +31,5 @@ var CashChannelRemarks = map[uint]string{
 	CashChannelAliCodePay:  "支付宝扫码支付",
 	CashChannelWxCodePay:   "微信扫码支付",
 	CashChannelAliMiniPay:  "支付宝小程序",
-	CashChannelDepositPay:  "钱包支付",
 	CashChannelCash:        "现金支付",
 }
