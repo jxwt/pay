@@ -12,9 +12,11 @@ const (
 	CashChannelAliAppPay  = 30 // 支付宝
 	CashChannelAliH5Pay   = 31 // 支付宝H5
 	CashChannelAliCodePay = 32 // 支付宝扫码支付
+	CashChannelAliMiniPay = 33 // 支付宝小程序
+
 	// 其他
 	CashChannelDepositPay = 50 // 钱包支付
-	CashChannelCash       = 51 // 现金
+	CashChannelCash       = 51 // 现金支付
 )
 
 // CashChannelRemarks 支付途径描述
@@ -28,4 +30,7 @@ var CashChannelRemarks = map[uint]string{
 	CashChannelWxPublicPay: "微信公众号",
 	CashChannelAliCodePay:  "支付宝扫码支付",
 	CashChannelWxCodePay:   "微信扫码支付",
+	CashChannelAliMiniPay:  "支付宝小程序",
+	CashChannelDepositPay:  "钱包支付",
+	CashChannelCash:        "现金支付",
 }
