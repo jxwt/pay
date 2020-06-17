@@ -67,4 +67,5 @@ type SendCallBackNotify struct {
 	OrderID       int     `json:"orderID"`       // 订单ID
 	CashChannelID int     `json:"cashChannelID"` // 支付方式
 	ConfirmAt     string  `json:"confirmAt"`     // 支付完成时间
+	CashReasonID  int     `json:"cashReasonID"`  // 支付原因
 }
