@@ -61,7 +61,7 @@ func DoPay(r *DoPayRequest) (interface{}, error) {
 		logs.Error(err)
 		return "", err
 	}
-	return d.Message, nil
+	return d.Data, nil
 }
 
 // GetIPAddr 获取本机内网地址
