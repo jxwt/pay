@@ -17,6 +17,7 @@ const (
 	// 其他
 	CashChannelDepositPay = 50 // 钱包支付
 	CashChannelCash       = 51 // 现金支付
+	CashChannelPackHour   = 52 // 包时长
 )
 
 // CashChannelRemarks 支付途径描述
@@ -32,4 +33,5 @@ var CashChannelRemarks = map[uint]string{
 	CashChannelWxCodePay:   "微信扫码支付",
 	CashChannelAliMiniPay:  "支付宝小程序",
 	CashChannelCash:        "现金支付",
+	CashChannelPackHour:    "包时长",
 }
