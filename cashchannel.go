@@ -35,3 +35,11 @@ var CashChannelRemarks = map[uint]string{
 	CashChannelCash:        "现金支付",
 	CashChannelPackHour:    "包时长",
 }
+
+// GetChannelName 获取channel备注
+func GetChannelName(channelID int) string {
+	if _, ok := CashChannelRemarks[channelID]; ok {
+		return CashChannelRemarks[channelID]
+	}
+	return ""
+}

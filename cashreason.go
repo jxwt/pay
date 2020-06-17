@@ -50,3 +50,11 @@ var CashReasonRemarks = map[uint]string{
 	CashReasonBillPackSpotRefund:   "包车位退款",
 	CashReasonMarginRefund:         "保证金退款",
 }
+
+// GetReasonName 获取channel备注
+func GetReasonName(cashReasonID int) string {
+	if _, ok := CashReasonRemarks[cashReasonID]; ok {
+		return CashReasonRemarks[cashReasonID]
+	}
+	return ""
+}
