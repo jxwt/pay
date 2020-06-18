@@ -2,6 +2,7 @@ package pay
 
 import (
 	"encoding/json"
+	"errors"
 	"github.com/astaxie/beego/logs"
 	"io/ioutil"
 	"net"
@@ -60,6 +61,9 @@ func DoPay(r *DoPayRequest) (interface{}, error) {
 	if err = json.Unmarshal(body, d); err != nil {
 		logs.Error(err)
 		return "", err
+	}
+	if d.State == "failed" {
+		return d.Message, errors.New(d.Message)
 	}
 	return d.Data, nil
 }
