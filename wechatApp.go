@@ -1,11 +1,10 @@
-package client
+package pay
 
 import (
 	"bytes"
 	"errors"
 	"fmt"
-	"github.com/jxwt/pay/common"
-	"github.com/jxwt/pay/util"
+	"github.com/jxwt/tools"
 	"strconv"
 	"strings"
 	"time"
@@ -52,7 +51,7 @@ type WxPayTool struct {
 }
 
 // Pay 支付
-func (this *WechatAppClient) Pay(charge *common.Charge) (map[string]string, error) {
+func (this *WechatAppClient) Pay(charge *Charge) (map[string]string, error) {
 	result, err := this.WxUnifiedOrder(charge, "APP")
 	if err != nil {
 		return map[string]string{}, errors.New("WechatApp.sign: " + err.Error())
@@ -62,7 +61,7 @@ func (this *WechatAppClient) Pay(charge *common.Charge) (map[string]string, erro
 	c["partnerid"] = this.MchID
 	c["prepayid"] = result.PrepayID
 	c["package"] = "Sign=WXPay"
-	c["noncestr"] = util.RandomStr()
+	c["noncestr"] = RandomStr()
 	c["timestamp"] = fmt.Sprintf("%d", time.Now().Unix())
 	sign2, err := WechatGenSign(this.Key, c)
 	if err != nil {
@@ -73,21 +72,21 @@ func (this *WechatAppClient) Pay(charge *common.Charge) (map[string]string, erro
 }
 
 // 支付到用户的微信账号
-func (this *WechatAppClient) PayToClient(charge *common.Charge) (map[string]string, error) {
+func (this *WechatAppClient) PayToClient(charge *Charge) (map[string]string, error) {
 	return WachatCompanyChange(this.AppID, this.MchID, this.Key, this.httpsClient, charge)
 }
 
 // QueryOrder 查询订单
-func (this *WechatAppClient) QueryOrder(tradeNum string) (common.WeChatQueryResult, error) {
+func (this *WechatAppClient) QueryOrder(tradeNum string) (WeChatQueryResult, error) {
 	var m = make(map[string]string)
 	m["appid"] = this.AppID
 	m["mch_id"] = this.MchID
 	m["out_trade_no"] = tradeNum
-	m["nonce_str"] = util.RandomStr()
+	m["nonce_str"] = RandomStr()
 
 	sign, err := WechatGenSign(this.Key, m)
 	if err != nil {
-		return common.WeChatQueryResult{}, err
+		return WeChatQueryResult{}, err
 	}
 
 	m["sign"] = sign
@@ -95,16 +94,16 @@ func (this *WechatAppClient) QueryOrder(tradeNum string) (common.WeChatQueryResu
 	return PostWechat("https://api.mch.weixin.qq.com/pay/orderquery", m, nil)
 }
 
-func (this *WechatAppClient) WxUnifiedOrder(charge *common.Charge, tradeType string) (common.WeChatQueryResult, error) {
-	result := new(common.WeChatQueryResult)
+func (this *WechatAppClient) WxUnifiedOrder(charge *Charge, tradeType string) (WeChatQueryResult, error) {
+	result := new(WeChatQueryResult)
 	var m = make(map[string]string)
 	m["appid"] = this.AppID
 	m["mch_id"] = this.MchID
-	m["nonce_str"] = util.RandomStr()
+	m["nonce_str"] = RandomStr()
 	m["body"] = TruncatedText(charge.Describe, 32)
 	m["out_trade_no"] = charge.TradeNum
 	m["total_fee"] = WechatMoneyFeeToString(charge.MoneyFee)
-	m["spbill_create_ip"] = util.LocalIP()
+	m["spbill_create_ip"] = tools.GetLocalAddr()
 	m["notify_url"] = charge.CallbackURL
 	m["trade_type"] = tradeType
 	m["sign_type"] = "MD5"
@@ -137,15 +136,15 @@ func WechatCallBackSuccessRes() string {
 // OutRefundNo 为后端自定义的随机字符串（尽量唯一） 与 商户退款单号（确保唯一性）
 // TotalFee 订单的金额
 // AuthCode 用户的授权码(条形码)
-func (i *WechatAppClient) MicroPay(req *common.MicroPayRequest) (*common.WeChatQueryResult, error) {
+func (i *WechatAppClient) MicroPay(req *MicroPayRequest) (*WeChatQueryResult, error) {
 	var m = make(map[string]string)
 	m["appid"] = i.AppID
 	m["mch_id"] = i.MchID
-	m["nonce_str"] = util.RandomStr()
+	m["nonce_str"] = RandomStr()
 	m["body"] = req.Remark
 	m["out_trade_no"] = req.OutTradeNo
 	m["total_fee"] = strconv.Itoa(req.TotalFee)
-	m["spbill_create_ip"] = util.LocalIP()
+	m["spbill_create_ip"] = tools.GetLocalAddr()
 	m["auth_code"] = req.AuthCode
 
 	sign, err := WechatGenSign(i.Key, m)

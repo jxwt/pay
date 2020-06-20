@@ -1,10 +1,9 @@
-package client
+package pay
 
 import (
 	"errors"
 	"fmt"
-	"github.com/jxwt/pay/common"
-	"github.com/jxwt/pay/util"
+	"github.com/jxwt/tools"
 	"time"
 )
 
@@ -33,15 +32,15 @@ type WechatMiniProgramClient struct {
 }
 
 // Pay 支付
-func (this *WechatMiniProgramClient) Pay(charge *common.Charge) (map[string]string, error) {
+func (this *WechatMiniProgramClient) Pay(charge *Charge) (map[string]string, error) {
 	var m = make(map[string]string)
 	m["appid"] = this.AppID
 	m["mch_id"] = this.MchID
-	m["nonce_str"] = util.RandomStr()
+	m["nonce_str"] = RandomStr()
 	m["body"] = TruncatedText(charge.Describe, 32)
 	m["out_trade_no"] = charge.TradeNum
 	m["total_fee"] = WechatMoneyFeeToString(charge.MoneyFee)
-	m["spbill_create_ip"] = util.LocalIP()
+	m["spbill_create_ip"] = tools.GetLocalAddr()
 	m["notify_url"] = charge.CallbackURL
 	m["trade_type"] = "JSAPI"
 	m["openid"] = charge.OpenID
@@ -62,7 +61,7 @@ func (this *WechatMiniProgramClient) Pay(charge *common.Charge) (map[string]stri
 	var c = make(map[string]string)
 	c["appId"] = this.AppID
 	c["timeStamp"] = fmt.Sprintf("%d", time.Now().Unix())
-	c["nonceStr"] = util.RandomStr()
+	c["nonceStr"] = RandomStr()
 	c["package"] = fmt.Sprintf("prepay_id=%s", xmlRe.PrepayID)
 	c["signType"] = "MD5"
 	sign2, err := WechatGenSign(this.Key, c)
@@ -75,15 +74,15 @@ func (this *WechatMiniProgramClient) Pay(charge *common.Charge) (map[string]stri
 }
 
 // Pay 支付
-func (this *WechatMiniProgramClient) AppPay(charge *common.Charge) (map[string]string, error) {
+func (this *WechatMiniProgramClient) AppPay(charge *Charge) (map[string]string, error) {
 	var m = make(map[string]string)
 	m["appid"] = this.AppID
 	m["mch_id"] = this.MchID
-	m["nonce_str"] = util.RandomStr()
+	m["nonce_str"] = RandomStr()
 	m["body"] = TruncatedText(charge.Describe, 32)
 	m["out_trade_no"] = charge.TradeNum
 	m["total_fee"] = WechatMoneyFeeToString(charge.MoneyFee)
-	m["spbill_create_ip"] = util.LocalIP()
+	m["spbill_create_ip"] = tools.GetLocalAddr()
 	m["notify_url"] = charge.CallbackURL
 	m["trade_type"] = "APP"
 	m["openid"] = charge.OpenID
@@ -103,7 +102,7 @@ func (this *WechatMiniProgramClient) AppPay(charge *common.Charge) (map[string]s
 	var c = make(map[string]string)
 	c["appId"] = this.AppID
 	c["timeStamp"] = fmt.Sprintf("%d", time.Now().Unix())
-	c["nonceStr"] = util.RandomStr()
+	c["nonceStr"] = RandomStr()
 	c["package"] = "Sign=WXPay"
 	c["prepayId"] = xmlRe.PrepayID
 	c["signType"] = "MD5"
@@ -118,21 +117,21 @@ func (this *WechatMiniProgramClient) AppPay(charge *common.Charge) (map[string]s
 }
 
 // 支付到用户的微信账号
-func (this *WechatMiniProgramClient) PayToClient(charge *common.Charge) (map[string]string, error) {
+func (this *WechatMiniProgramClient) PayToClient(charge *Charge) (map[string]string, error) {
 	return WachatCompanyChange(this.AppID, this.MchID, this.Key, this.httpsClient, charge)
 }
 
 // QueryOrder 查询订单
-func (this *WechatMiniProgramClient) QueryOrder(tradeNum string) (common.WeChatQueryResult, error) {
+func (this *WechatMiniProgramClient) QueryOrder(tradeNum string) (WeChatQueryResult, error) {
 	var m = make(map[string]string)
 	m["appid"] = this.AppID
 	m["mch_id"] = this.MchID
 	m["out_trade_no"] = tradeNum
-	m["nonce_str"] = util.RandomStr()
+	m["nonce_str"] = RandomStr()
 
 	sign, err := WechatGenSign(this.Key, m)
 	if err != nil {
-		return common.WeChatQueryResult{}, err
+		return WeChatQueryResult{}, err
 	}
 
 	m["sign"] = sign

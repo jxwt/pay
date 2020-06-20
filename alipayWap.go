@@ -1,4 +1,4 @@
-package client
+package pay
 
 import (
 	"bytes"
@@ -13,7 +13,6 @@ import (
 	"fmt"
 	"github.com/astaxie/beego/httplib"
 	"github.com/astaxie/beego/logs"
-	"github.com/jxwt/pay/common"
 	"golang.org/x/text/encoding/simplifiedchinese"
 	"golang.org/x/text/transform"
 	"io/ioutil"
@@ -41,15 +40,15 @@ func GetDefaultAliWapClient() *AliWapClient {
 	return DefaultAliWapClient
 }
 
-func (this *AliWapClient) Pay(charge *common.Charge) (map[string]string, error) {
+func (this *AliWapClient) Pay(charge *Charge) (map[string]string, error) {
 	return nil, nil
 }
 
-func (this *AliWapClient) PayToClient(charge *common.Charge) (map[string]string, error) {
+func (this *AliWapClient) PayToClient(charge *Charge) (map[string]string, error) {
 	return map[string]string{}, errors.New("暂未开发该功能")
 }
 
-func (this *AliWapClient) MakePayMap(method string, charge *common.Charge, rsaType string) (map[string]string, error) {
+func (this *AliWapClient) MakePayMap(method string, charge *Charge, rsaType string) (map[string]string, error) {
 	var m = make(map[string]string)
 	var bizContent = make(map[string]string)
 	m["app_id"] = this.AppID
@@ -84,7 +83,7 @@ func (this *AliWapClient) MakePayMap(method string, charge *common.Charge, rsaTy
 	return m, nil
 }
 
-func (this *AliWapClient) MakeH5PayMap(method string, charge *common.Charge, rsaType string) (string, error) {
+func (this *AliWapClient) MakeH5PayMap(method string, charge *Charge, rsaType string) (string, error) {
 	var m = make(map[string]string)
 	var bizContent = make(map[string]string)
 	m["app_id"] = this.AppID
@@ -138,7 +137,7 @@ func (this *AliWapClient) MakeH5PayMap(method string, charge *common.Charge, rsa
 	return fmt.Sprintf(formatStr, "https://openapi.alipay.com/gateway.do?charset=utf-8", buf.String()), nil
 }
 
-func (this *AliWapClient) ToPay(charge *common.Charge) (string, error) {
+func (this *AliWapClient) ToPay(charge *Charge) (string, error) {
 	payMap, err := this.MakePayMap("alipay.trade.wap.pay", charge, "RSA2")
 	if err != nil {
 		return "", err
@@ -147,7 +146,7 @@ func (this *AliWapClient) ToPay(charge *common.Charge) (string, error) {
 }
 
 // ToH5Pay 支付宝h5支付,返回请求参数
-func (this *AliWapClient) ToH5Pay(charge *common.Charge) (string, error) {
+func (this *AliWapClient) ToH5Pay(charge *Charge) (string, error) {
 	formData, err := this.MakeH5PayMap("alipay.trade.wap.pay", charge, "RSA2")
 	if err != nil {
 		return "", err

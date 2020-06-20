@@ -1,12 +1,16 @@
-package common
+package pay
 
-// PayClient 支付客户端接口
-type PayClient interface {
-	// 用户下单付款
-	Pay(charge *Charge) (map[string]string, error)
-	// 付款给用户
-	PayToClient(charge *Charge) (map[string]string, error)
-}
+const (
+	ALI_WEB             = iota + 1 // 支付宝网页
+	ALI_APP                        // 支付宝App
+	WECHAT_WEB                     // 微信网页
+	WECHAT_APP                     // 微信App
+	WECHAT_MINI_PROGRAM            // 微信小程序
+	AlI_SCANBAR                    //支付宝扫码
+	WECHAT_SCANBAR                 // 微信扫码
+	WECHAT_H5                      //微信H5支付
+	ALI_H5                         //支付宝h5
+)
 
 // Charge 支付参数
 type Charge struct {

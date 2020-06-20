@@ -1,4 +1,4 @@
-package client
+package pay
 
 import (
 	"crypto/tls"

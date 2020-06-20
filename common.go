@@ -1,4 +1,4 @@
-package client
+package pay
 
 import (
 	"bytes"
@@ -7,23 +7,28 @@ import (
 	"encoding/xml"
 	"errors"
 	"fmt"
-	"github.com/jxwt/pay/common"
-	"github.com/jxwt/pay/util"
+	"github.com/jxwt/tools"
 	"github.com/shopspring/decimal"
 	"sort"
 	"strings"
+	"time"
 )
 
+//RandomStr 获取一个随机字符串
+func RandomStr() string {
+	return fmt.Sprintf("%d", time.Now().UnixNano())
+}
+
 // 微信企业付款到零钱
-func WachatCompanyChange(mchAppid, mchid, key string, conn *HTTPSClient, charge *common.Charge) (map[string]string, error) {
+func WachatCompanyChange(mchAppid, mchid, key string, conn *HTTPSClient, charge *Charge) (map[string]string, error) {
 	var m = make(map[string]string)
 	m["mch_appid"] = mchAppid
 	m["mchid"] = mchid
-	m["nonce_str"] = util.RandomStr()
+	m["nonce_str"] = RandomStr()
 	m["partner_trade_no"] = charge.TradeNum
 	m["openid"] = charge.OpenID
 	m["amount"] = WechatMoneyFeeToString(charge.MoneyFee)
-	m["spbill_create_ip"] = util.LocalIP()
+	m["spbill_create_ip"] = tools.GetLocalAddr()
 	m["desc"] = TruncatedText(charge.Describe, 32)
 
 	// 是否验证用户名称
@@ -103,8 +108,8 @@ func FilterTheSpecialSymbol(data string) string {
 }
 
 //对微信下订单或者查订单
-func PostWechat(url string, data map[string]string, h *HTTPSClient) (common.WeChatQueryResult, error) {
-	var xmlRe common.WeChatQueryResult
+func PostWechat(url string, data map[string]string, h *HTTPSClient) (WeChatQueryResult, error) {
+	var xmlRe WeChatQueryResult
 	buf := bytes.NewBufferString("")
 
 	for k, v := range data {
@@ -141,8 +146,8 @@ func PostWechat(url string, data map[string]string, h *HTTPSClient) (common.WeCh
 }
 
 //对支付宝者查订单
-func GetAlipay(url string) (common.AliWebQueryResult, error) {
-	var xmlRe common.AliWebQueryResult
+func GetAlipay(url string) (AliWebQueryResult, error) {
+	var xmlRe AliWebQueryResult
 
 	re, err := HTTPSC.GetData(url)
 	if err != nil {
@@ -156,8 +161,8 @@ func GetAlipay(url string) (common.AliWebQueryResult, error) {
 }
 
 //对支付宝者查订单
-func GetAlipayApp(urls string) (common.AliWebAppQueryResult, error) {
-	var aliPay common.AliWebAppQueryResult
+func GetAlipayApp(urls string) (AliWebAppQueryResult, error) {
+	var aliPay AliWebAppQueryResult
 
 	re, err := HTTPSC.GetData(urls)
 	if err != nil {

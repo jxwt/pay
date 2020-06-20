@@ -1,4 +1,4 @@
-package client
+package pay
 
 import (
 	"crypto"
@@ -8,7 +8,6 @@ import (
 	"encoding/base64"
 	"errors"
 	"fmt"
-	"github.com/jxwt/pay/common"
 	"net/url"
 	"sort"
 	"strings"
@@ -36,7 +35,7 @@ func DefaultAliWebClient() *AliWebClient {
 }
 
 // Pay 实现支付接口
-func (this *AliWebClient) Pay(charge *common.Charge) (map[string]string, error) {
+func (this *AliWebClient) Pay(charge *Charge) (map[string]string, error) {
 	var m = make(map[string]string)
 	m["systemsService"] = "create_direct_pay_by_user"
 	m["partner"] = this.PartnerID
@@ -55,12 +54,12 @@ func (this *AliWebClient) Pay(charge *common.Charge) (map[string]string, error) 
 	return map[string]string{"url": ToURL("https://mapi.alipay.com/gateway.do", m)}, nil
 }
 
-func (this *AliWebClient) PayToClient(charge *common.Charge) (map[string]string, error) {
+func (this *AliWebClient) PayToClient(charge *Charge) (map[string]string, error) {
 	return map[string]string{}, errors.New("暂未开发该功能")
 }
 
 // 订单查询
-func (this *AliWebClient) QueryOrder(outTradeNo string) (common.AliWebQueryResult, error) {
+func (this *AliWebClient) QueryOrder(outTradeNo string) (AliWebQueryResult, error) {
 	var m = make(map[string]string)
 	m["systemsService"] = "single_trade_query"
 	m["partner"] = this.PartnerID

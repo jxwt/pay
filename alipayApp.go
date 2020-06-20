@@ -1,4 +1,4 @@
-package client
+package pay
 
 import (
 	"bytes"
@@ -15,7 +15,6 @@ import (
 	"fmt"
 	"github.com/astaxie/beego/httplib"
 	"github.com/astaxie/beego/logs"
-	"github.com/jxwt/pay/common"
 	"golang.org/x/text/encoding/simplifiedchinese"
 	"golang.org/x/text/transform"
 	"io/ioutil"
@@ -47,7 +46,7 @@ func GetDefaultAliAppClient() *AliAppClient {
 	return DefaultAliAppClient
 }
 
-func (this *AliAppClient) MakePayMap(method string, charge *common.Charge, rsaType string) (map[string]string, error) {
+func (this *AliAppClient) MakePayMap(method string, charge *Charge, rsaType string) (map[string]string, error) {
 	var m = make(map[string]string)
 	var bizContent = make(map[string]string)
 	m["app_id"] = this.AppID
@@ -80,7 +79,7 @@ func (this *AliAppClient) MakePayMap(method string, charge *common.Charge, rsaTy
 	return m, nil
 }
 
-func (this *AliAppClient) MakeRefund(method string, bizContent *common.AliRefundRequest, rsaType string) (map[string]string, error) {
+func (this *AliAppClient) MakeRefund(method string, bizContent *AliRefundRequest, rsaType string) (map[string]string, error) {
 	var m = make(map[string]string)
 	m["app_id"] = this.AppID
 	m["method"] = method
@@ -106,7 +105,7 @@ func (this *AliAppClient) MakeRefund(method string, bizContent *common.AliRefund
 }
 
 // MakeToaccountTransfer 单比转账请求
-func (c *AliAppClient) MakeToaccountTransfer(method string, req *common.ToaccountTransferRequest, rsaType string) (map[string]string, error) {
+func (c *AliAppClient) MakeToaccountTransfer(method string, req *ToaccountTransferRequest, rsaType string) (map[string]string, error) {
 	var m = make(map[string]string)
 	m["app_id"] = c.AppID
 	m["method"] = method
@@ -129,10 +128,10 @@ func (c *AliAppClient) MakeToaccountTransfer(method string, req *common.Toaccoun
 	return m, nil
 }
 
-func (this *AliAppClient) Pay(charge *common.Charge) (map[string]string, error) {
+func (this *AliAppClient) Pay(charge *Charge) (map[string]string, error) {
 	return nil, nil
 }
-func (this *AliAppClient) ToPay(charge *common.Charge) (string, error) {
+func (this *AliAppClient) ToPay(charge *Charge) (string, error) {
 	payMap, err := this.MakePayMap("alipay.trade.apps.pay", charge, "RSA")
 	if err != nil {
 		return "", err
@@ -141,7 +140,7 @@ func (this *AliAppClient) ToPay(charge *common.Charge) (string, error) {
 }
 
 // 支付宝退款
-func (this *AliAppClient) Refund(refund *common.AliRefundRequest) (*common.AliRefundResponse, error) {
+func (this *AliAppClient) Refund(refund *AliRefundRequest) (*AliRefundResponse, error) {
 	payMap, err := this.MakeRefund("alipay.trade.refund", refund, "RSA2")
 	if err != nil {
 		return nil, err
@@ -150,7 +149,7 @@ func (this *AliAppClient) Refund(refund *common.AliRefundRequest) (*common.AliRe
 	if err != nil || response == "" {
 		return nil, err
 	}
-	result := new(common.AliRefundResponse)
+	result := new(AliRefundResponse)
 	err = json.Unmarshal([]byte(response), result)
 	if err != nil {
 		return result, err
@@ -159,7 +158,7 @@ func (this *AliAppClient) Refund(refund *common.AliRefundRequest) (*common.AliRe
 }
 
 // ToaccountTransfer 单笔转账到支付宝账户
-func (c *AliAppClient) ToaccountTransfer(req *common.ToaccountTransferRequest) (*common.ToaccountTransferResponse, error) {
+func (c *AliAppClient) ToaccountTransfer(req *ToaccountTransferRequest) (*ToaccountTransferResponse, error) {
 	reqMap, err := c.MakeToaccountTransfer("alipay.fund.trans.toaccount.transfer", req, "RSA")
 	if err != nil {
 		return nil, err
@@ -168,7 +167,7 @@ func (c *AliAppClient) ToaccountTransfer(req *common.ToaccountTransferRequest) (
 	if err != nil || response == "" {
 		return nil, err
 	}
-	result := new(common.ToaccountTransferResponse)
+	result := new(ToaccountTransferResponse)
 	err = json.Unmarshal([]byte(response), result)
 	if err != nil {
 		return result, err
@@ -179,7 +178,7 @@ func (c *AliAppClient) ToaccountTransfer(req *common.ToaccountTransferRequest) (
 /**
 获取APP支付的链接码
 */
-func (this *AliAppClient) AppPay(charge *common.Charge) (string, error) {
+func (this *AliAppClient) AppPay(charge *Charge) (string, error) {
 	payMap, err := this.MakePayMap("alipay.trade.app.pay", charge, "RSA2")
 	if err != nil {
 		return "", err
@@ -187,7 +186,7 @@ func (this *AliAppClient) AppPay(charge *common.Charge) (string, error) {
 	return this.ToURL(payMap), nil
 }
 
-func (this *AliAppClient) CreateOrder(charge *common.Charge) (string, error) {
+func (this *AliAppClient) CreateOrder(charge *Charge) (string, error) {
 	payMap, err := this.MakePayMap("alipay.trade.create", charge, "RSA2")
 	if err != nil {
 		return "", err
@@ -267,13 +266,13 @@ func (this *AliAppClient) SendToAlipay(m map[string]string, method string) (stri
 	return string(body), err
 }
 
-func (this *AliAppClient) PayToClient(charge *common.Charge) (map[string]string, error) {
+func (this *AliAppClient) PayToClient(charge *Charge) (map[string]string, error) {
 
 	return map[string]string{}, errors.New("暂未开发该功能")
 }
 
 // 退款查询
-func (this *AliAppClient) QueryRefund(outTradeNo string) (*common.AliRefundResponse, error) {
+func (this *AliAppClient) QueryRefund(outTradeNo string) (*AliRefundResponse, error) {
 	var m = make(map[string]string)
 	m["method"] = "alipay.trade.fastpay.refund.query"
 	m["app_id"] = this.AppID
@@ -295,7 +294,7 @@ func (this *AliAppClient) QueryRefund(outTradeNo string) (*common.AliRefundRespo
 	if err != nil {
 		return nil, err
 	}
-	result := new(common.AliRefundResponse)
+	result := new(AliRefundResponse)
 	err = json.Unmarshal([]byte(resp), result)
 	if err != nil {
 		return nil, err
@@ -304,7 +303,7 @@ func (this *AliAppClient) QueryRefund(outTradeNo string) (*common.AliRefundRespo
 }
 
 // 订单查询
-func (this *AliAppClient) QueryOrder(outTradeNo string) (*common.AliWebAppQueryResult, error) {
+func (this *AliAppClient) QueryOrder(outTradeNo string) (*AliWebAppQueryResult, error) {
 	var m = make(map[string]string)
 	m["method"] = "alipay.trade.query"
 	m["app_id"] = this.AppID
@@ -316,7 +315,7 @@ func (this *AliAppClient) QueryOrder(outTradeNo string) (*common.AliWebAppQueryR
 	bizContent := map[string]string{"out_trade_no": outTradeNo}
 	bizContentJson, err := json.Marshal(bizContent)
 	if err != nil {
-		return &common.AliWebAppQueryResult{}, errors.New("json.Marshal: " + err.Error())
+		return &AliWebAppQueryResult{}, errors.New("json.Marshal: " + err.Error())
 	}
 	m["biz_content"] = this.NewEncoderToString(bizContentJson)
 	m["sign"] = this.GenSign(m)
@@ -324,7 +323,7 @@ func (this *AliAppClient) QueryOrder(outTradeNo string) (*common.AliWebAppQueryR
 	if err != nil || response == "" {
 		return nil, err
 	}
-	result := new(common.AliWebAppQueryResult)
+	result := new(AliWebAppQueryResult)
 	err = json.Unmarshal([]byte(response), result)
 	if err != nil {
 		return result, err
@@ -332,8 +331,8 @@ func (this *AliAppClient) QueryOrder(outTradeNo string) (*common.AliWebAppQueryR
 	return result, nil
 }
 
-func (this *AliAppClient) AliPreCreate(preCreate common.Charge) (common.PreCreateResult, error) {
-	preCreateResult := new(common.PreCreateResponse)
+func (this *AliAppClient) AliPreCreate(preCreate Charge) (PreCreateResult, error) {
+	preCreateResult := new(PreCreateResponse)
 	payMap, err := this.MakePayMap("alipay.trade.precreate", &preCreate, "RSA2")
 	if err != nil {
 		return preCreateResult.PreCreateResult, errors.New("json.Marshal: " + err.Error())
@@ -520,7 +519,7 @@ func formatKey(raw, prefix, suffix string) (result []byte) {
 }
 
 // AliTradePay 支付宝统一收单
-func (c *AliAppClient) AliTradePay(aliTradePay *common.AliTradePayRequest) (*common.AliTradePayResponse, error) {
+func (c *AliAppClient) AliTradePay(aliTradePay *AliTradePayRequest) (*AliTradePayResponse, error) {
 	payMap, err := c.MakeTradePay("alipay.trade.pay", aliTradePay, "RSA2")
 	if err != nil {
 		return nil, err
@@ -529,7 +528,7 @@ func (c *AliAppClient) AliTradePay(aliTradePay *common.AliTradePayRequest) (*com
 	if err != nil || response == "" {
 		return nil, err
 	}
-	result := new(common.AliTradePayResponse)
+	result := new(AliTradePayResponse)
 	err = json.Unmarshal([]byte(response), result)
 	if err != nil {
 		return result, err
@@ -538,7 +537,7 @@ func (c *AliAppClient) AliTradePay(aliTradePay *common.AliTradePayRequest) (*com
 }
 
 // MakeTradePay 创建支付宝统一收单请求
-func (c *AliAppClient) MakeTradePay(method string, bizContent *common.AliTradePayRequest, rsaType string) (map[string]string, error) {
+func (c *AliAppClient) MakeTradePay(method string, bizContent *AliTradePayRequest, rsaType string) (map[string]string, error) {
 	var m = make(map[string]string)
 	m["app_id"] = c.AppID
 	m["method"] = method
@@ -564,7 +563,7 @@ func (c *AliAppClient) MakeTradePay(method string, bizContent *common.AliTradePa
 }
 
 // AliTradeCancel 支付撤单
-func (c *AliAppClient) AliTradeCancel(aliTradePay *common.AliTradeCancelRequest) (*common.AliTradeCancelResponse, error) {
+func (c *AliAppClient) AliTradeCancel(aliTradePay *AliTradeCancelRequest) (*AliTradeCancelResponse, error) {
 	payMap, err := c.MakeTradeCancel("alipay.trade.cancel", aliTradePay, "RSA2")
 	if err != nil {
 		return nil, err
@@ -573,7 +572,7 @@ func (c *AliAppClient) AliTradeCancel(aliTradePay *common.AliTradeCancelRequest)
 	if err != nil || response == "" {
 		return nil, err
 	}
-	result := new(common.AliTradeCancelResponse)
+	result := new(AliTradeCancelResponse)
 	err = json.Unmarshal([]byte(response), result)
 	if err != nil {
 		return result, err
@@ -582,7 +581,7 @@ func (c *AliAppClient) AliTradeCancel(aliTradePay *common.AliTradeCancelRequest)
 }
 
 // MakeTradePay 创建支付宝统一收单请求
-func (c *AliAppClient) MakeTradeCancel(method string, bizContent *common.AliTradeCancelRequest, rsaType string) (map[string]string, error) {
+func (c *AliAppClient) MakeTradeCancel(method string, bizContent *AliTradeCancelRequest, rsaType string) (map[string]string, error) {
 	var m = make(map[string]string)
 	m["app_id"] = c.AppID
 	m["method"] = method
