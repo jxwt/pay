@@ -2,6 +2,7 @@ package pay
 
 import (
 	"encoding/json"
+	"errors"
 	"github.com/astaxie/beego/logs"
 	"io/ioutil"
 	"net"
@@ -61,7 +62,10 @@ func DoPay(r *DoPayRequest) (interface{}, error) {
 		logs.Error(err)
 		return "", err
 	}
-	return d.Message, nil
+	if d.State == "failed" {
+		return d.Message, errors.New(d.Message)
+	}
+	return d.Data, nil
 }
 
 // GetIPAddr 获取本机内网地址
