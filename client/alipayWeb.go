@@ -8,7 +8,7 @@ import (
 	"encoding/base64"
 	"errors"
 	"fmt"
-	"github.com/jxwt/pay/gopay/common"
+	"github.com/jxwt/pay/common"
 	"net/url"
 	"sort"
 	"strings"

@@ -3,24 +3,23 @@ package client
 import (
 	"errors"
 	"fmt"
-	"github.com/jxwt/pay/gopay/common"
-	"github.com/jxwt/pay/gopay/util"
+	"github.com/jxwt/pay/common"
+	"github.com/jxwt/pay/util"
 	"time"
 )
 
-//微信H5支付
-var defaultWechatH5Client *WechatH5Client
+var defaultWechatWebClient *WechatWebClient
 
-func InitWxH5Client(c *WechatH5Client) {
-	defaultWechatH5Client = c
+func InitWxWebClient(c *WechatWebClient) {
+	defaultWechatWebClient = c
 }
 
-func DefaultWechatH5Client() *WechatH5Client {
-	return defaultWechatH5Client
+func DefaultWechatWebClient() *WechatWebClient {
+	return defaultWechatWebClient
 }
 
-// WechatH5Client 微信H5支付
-type WechatH5Client struct {
+// WechatWebClient 微信公众号支付
+type WechatWebClient struct {
 	AppID       string       // 公众账号ID
 	MchID       string       // 商户号ID
 	Key         string       // 密钥
@@ -29,7 +28,8 @@ type WechatH5Client struct {
 	httpsClient *HTTPSClient // 双向证书链接
 }
 
-func (this *WechatH5Client) Pay(charge *common.Charge) (map[string]string, error) {
+// Pay 支付
+func (this *WechatWebClient) Pay(charge *common.Charge) (map[string]string, error) {
 	var m = make(map[string]string)
 	m["appid"] = this.AppID
 	m["mch_id"] = this.MchID
@@ -39,11 +39,10 @@ func (this *WechatH5Client) Pay(charge *common.Charge) (map[string]string, error
 	m["total_fee"] = WechatMoneyFeeToString(charge.MoneyFee)
 	m["spbill_create_ip"] = util.LocalIP()
 	m["notify_url"] = charge.CallbackURL
-	m["trade_type"] = "MWEB"
+	m["trade_type"] = "JSAPI"
 	m["openid"] = charge.OpenID
 	m["sign_type"] = "MD5"
-	sceneInfo := fmt.Sprintf(`{"h5_info": {"type":"%s","app_name": "test.mall.zhuyitech.com","bundle_id": "com.zhuyi.MobileParking"}`, charge.SceneType)
-	m["scene_info"] = sceneInfo
+
 	sign, err := WechatGenSign(this.Key, m)
 	if err != nil {
 		return map[string]string{}, err
@@ -64,20 +63,20 @@ func (this *WechatH5Client) Pay(charge *common.Charge) (map[string]string, error
 	c["signType"] = "MD5"
 	sign2, err := WechatGenSign(this.Key, c)
 	if err != nil {
-		return map[string]string{}, errors.New("WechatH5: " + err.Error())
+		return map[string]string{}, errors.New("WechatWeb: " + err.Error())
 	}
 	c["paySign"] = sign2
-	c["mweb_url"] = xmlRe.MwebUrl
-	delete(c, "appId")
+
 	return c, nil
 }
 
-func (this *WechatH5Client) PayToClient(charge *common.Charge) (map[string]string, error) {
+// 支付到用户的微信账号
+func (this *WechatWebClient) PayToClient(charge *common.Charge) (map[string]string, error) {
 	return WachatCompanyChange(this.AppID, this.MchID, this.Key, this.httpsClient, charge)
 }
 
 // QueryOrder 查询订单
-func (this *WechatH5Client) QueryOrder(tradeNum string) (common.WeChatQueryResult, error) {
+func (this *WechatWebClient) QueryOrder(tradeNum string) (common.WeChatQueryResult, error) {
 	var m = make(map[string]string)
 	m["appid"] = this.AppID
 	m["mch_id"] = this.MchID

@@ -15,7 +15,7 @@ import (
 	"fmt"
 	"github.com/astaxie/beego/httplib"
 	"github.com/astaxie/beego/logs"
-	"github.com/jxwt/pay/gopay/common"
+	"github.com/jxwt/pay/common"
 	"golang.org/x/text/encoding/simplifiedchinese"
 	"golang.org/x/text/transform"
 	"io/ioutil"

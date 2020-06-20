@@ -3,8 +3,8 @@ package client
 import (
 	"errors"
 	"fmt"
-	"github.com/jxwt/pay/gopay/common"
-	"github.com/jxwt/pay/gopay/util"
+	"github.com/jxwt/pay/common"
+	"github.com/jxwt/pay/util"
 	"time"
 )
 
