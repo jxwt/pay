@@ -1,4 +1,4 @@
-package pay
+package alipay
 
 // AliWebPayResult 支付宝支付结果回调
 type AliWebPayResult struct {

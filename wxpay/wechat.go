@@ -1,4 +1,4 @@
-package pay
+package wxpay
 
 // WeChatResult 微信支付返回
 type WeChatReResult struct {

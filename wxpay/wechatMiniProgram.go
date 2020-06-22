@@ -1,8 +1,9 @@
-package pay
+package wxpay
 
 import (
 	"errors"
 	"fmt"
+	"github.com/jxwt/pay/alipay"
 	"github.com/jxwt/tools"
 	"time"
 )
@@ -11,7 +12,7 @@ var defaultWechatMiniProgramClient *WechatMiniProgramClient
 
 func InitWxMiniProgramClient(c *WechatMiniProgramClient) {
 	if len(c.PrivateKey) != 0 && len(c.PublicKey) != 0 {
-		c.httpsClient = NewHTTPSClient(c.PublicKey, c.PrivateKey)
+		c.httpsClient = alipay.NewHTTPSClient(c.PublicKey, c.PrivateKey)
 	}
 
 	defaultWechatMiniProgramClient = c
@@ -23,12 +24,12 @@ func DefaultWechatMiniProgramClient() *WechatMiniProgramClient {
 
 // WechatMiniProgramClient 微信小程序
 type WechatMiniProgramClient struct {
-	AppID       string       // 公众账号ID
-	MchID       string       // 商户号ID
-	Key         string       // 密钥
-	PrivateKey  []byte       // 私钥文件内容
-	PublicKey   []byte       // 公钥文件内容
-	httpsClient *HTTPSClient // 双向证书链接
+	AppID       string              // 公众账号ID
+	MchID       string              // 商户号ID
+	Key         string              // 密钥
+	PrivateKey  []byte              // 私钥文件内容
+	PublicKey   []byte              // 公钥文件内容
+	httpsClient *alipay.HTTPSClient // 双向证书链接
 }
 
 // Pay 支付
@@ -45,7 +46,7 @@ func (this *WechatMiniProgramClient) Pay(charge *Charge) (map[string]string, err
 	m["trade_type"] = "JSAPI"
 	m["openid"] = charge.OpenID
 	//m["sign_type"] = "MD5"
-	sign, err := WechatGenSign(this.Key, m)
+	sign, err :=WechatGenSign(this.Key, m)
 	if err != nil {
 		return map[string]string{}, err
 	}

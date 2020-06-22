@@ -1,8 +1,9 @@
-package pay
+package wxpay
 
 import (
 	"errors"
 	"fmt"
+	"github.com/jxwt/pay/alipay"
 	"github.com/jxwt/tools"
 	"time"
 )
@@ -20,12 +21,12 @@ func DefaultWechatH5Client() *WechatH5Client {
 
 // WechatH5Client 微信H5支付
 type WechatH5Client struct {
-	AppID       string       // 公众账号ID
-	MchID       string       // 商户号ID
-	Key         string       // 密钥
-	PrivateKey  []byte       // 私钥文件内容
-	PublicKey   []byte       // 公钥文件内容
-	httpsClient *HTTPSClient // 双向证书链接
+	AppID       string              // 公众账号ID
+	MchID       string              // 商户号ID
+	Key         string              // 密钥
+	PrivateKey  []byte              // 私钥文件内容
+	PublicKey   []byte              // 公钥文件内容
+	httpsClient *alipay.HTTPSClient // 双向证书链接
 }
 
 func (this *WechatH5Client) Pay(charge *Charge) (map[string]string, error) {

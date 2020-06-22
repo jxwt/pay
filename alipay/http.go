@@ -1,16 +1,13 @@
-package pay
+package alipay
 
 import (
 	"crypto/tls"
+	"github.com/astaxie/beego/httplib"
+	"github.com/astaxie/beego/logs"
 	"io/ioutil"
 	"net/http"
 	"strings"
 	"time"
-
-	//"errors"
-	//"fmt"
-	"github.com/astaxie/beego/httplib"
-	"github.com/astaxie/beego/logs"
 )
 
 var (
@@ -74,12 +71,6 @@ func NewHTTPSClient(certPEMBlock, keyPEMBlock []byte) *HTTPSClient {
 
 // PostData 提交post数据
 func (c *HTTPSClient) PostData(url string, contentType string, data string) ([]byte, error) {
-	//resp, err := c.Post(url, contentType, strings.NewReader(data))
-	//if err != nil {
-	//	panic(err)
-	//}
-	//defer resp.Body.Close()
-	//return ioutil.ReadAll(resp.Body)
 	req := httplib.Post(url)
 	req.Body(data)
 	req.Header("Content-Type", contentType)
@@ -95,17 +86,6 @@ func (c *HTTPSClient) PostData(url string, contentType string, data string) ([]b
 
 // PostData 提交post数据
 func (c *HTTPSClient) GetData(url string) ([]byte, error) {
-	//resp, err := c.Get(url)
-	//if err != nil {
-	//	panic(err)
-	//}
-	//
-	//if resp.StatusCode != 200 {
-	//	return []byte{}, errors.New("http.stateCode != 200 : " + fmt.Sprintf("%+v", resp))
-	//}
-	//defer resp.Body.Close()
-	//return ioutil.ReadAll(resp.Body)
-
 	req := httplib.Get(url)
 	resp, err := req.Response()
 	if err != nil {

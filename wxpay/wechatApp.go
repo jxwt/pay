@@ -1,9 +1,10 @@
-package pay
+package wxpay
 
 import (
 	"bytes"
 	"errors"
 	"fmt"
+	"github.com/jxwt/pay/alipay"
 	"github.com/jxwt/tools"
 	"strconv"
 	"strings"
@@ -31,12 +32,12 @@ func DefaultWechatAppClient() *WechatAppClient {
 
 // WechatAppClient 微信app支付
 type WechatAppClient struct {
-	AppID       string       // 公众账号ID
-	MchID       string       // 商户号ID
-	Key         string       // 密钥
-	PrivateKey  []byte       // 私钥文件内容
-	PublicKey   []byte       // 公钥文件内容
-	httpsClient *HTTPSClient // 双向证书链接
+	AppID       string              // 公众账号ID
+	MchID       string              // 商户号ID
+	Key         string              // 密钥
+	PrivateKey  []byte              // 私钥文件内容
+	PublicKey   []byte              // 公钥文件内容
+	httpsClient *alipay.HTTPSClient // 双向证书链接
 }
 
 type WxPayTool struct {
