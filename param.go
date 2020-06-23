@@ -33,6 +33,7 @@ type DoPayRequest struct {
 	TradeNumber   string  `json:"tradeNumber"`   // 商户单号(只用于存两份cashflow的服务,目前只有停车服务需要)
 	DiscountMoney float64 `json:"discountMoney"` // 优惠金额
 	PresentMoney  float64 `json:"presentMoney"`  // 赠送金额
+	ExtendParams  string  `json:"extendParams"`  // 额外参数(目前停车用)
 }
 
 // 服务注册参数
