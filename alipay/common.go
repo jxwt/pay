@@ -131,3 +131,17 @@ func FilterTheSpecialSymbol(data string) string {
 	data = strings.Map(specialSymbol, data)
 	return strings.Replace(data, "\n", " ", -1)
 }
+
+// TradeRelationBindRequest 分账关系绑定请求
+type TradeRelationBindRequest struct {
+	ReceiverLists []ReceiverList `json:"receiver_list"`
+	OutRequestNo  string         `json:"out_request_no"` // 外部请求号 32 唯一
+}
+
+// ReceiverList 分账列表
+type ReceiverList struct {
+	Type    string `json:"type"`    // 分账方类型
+	Account string `json:"account"` // 分账方帐号
+	Name    string `json:"name"`    // 分账方全称
+	Memo    string `json:"memo"`    // 分账关系描述
+}

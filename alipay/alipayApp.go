@@ -57,7 +57,15 @@ func (i *AliAppClient) MakePayMap(method string, charge *Charge, rsaType string)
 		bizContent["buyer_id"] = charge.BuyerId
 	}
 	if charge.ExtendParam != "" {
-		bizContent["extend_params"] = charge.ExtendParam
+		if charge.ExtendParam != "" {
+			p := new(ExtendParam)
+
+			err := json.Unmarshal([]byte(charge.ExtendParam), p)
+			if err != nil {
+				return nil, errors.New("ali pay extend param error")
+			}
+			bizContent["extend_params"] = p
+		}
 	}
 	bizContentJson, err := json.Marshal(bizContent)
 	if err != nil {
@@ -626,7 +634,13 @@ func (i *AliAppClient) MakeH5PayMap(charge *Charge, rsaType string) (string, err
 		bizContent["buyer_id"] = charge.BuyerId
 	}
 	if charge.ExtendParam != "" {
-		bizContent["extend_params"] = charge.ExtendParam
+		p := new(ExtendParam)
+
+		err := json.Unmarshal([]byte(charge.ExtendParam), p)
+		if err != nil {
+			return "", errors.New("ali pay extend param error")
+		}
+		bizContent["extend_params"] = p
 	}
 	//if charge.IndustryRefluxInfo != nil {
 	//	d, _ := json.Marshal(charge.IndustryRefluxInfo)
@@ -668,4 +682,42 @@ func (i *AliAppClient) MakeH5PayMap(charge *Charge, rsaType string) (string, err
 	</body>
 	</html>`
 	return fmt.Sprintf(formatStr, "https://openapi.alipay.com/gateway.do?charset=utf-8", buf.String()), nil
+}
+
+
+// TradeRelationBind 分账关系绑定
+func (c *AliAppClient) TradeRelationBind(bizContent *TradeRelationBindRequest) (interface{}, error) {
+	var m = make(map[string]string)
+	m["app_id"] = c.AppID
+	m["method"] = "alipay.trade.royalty.relation.bind"
+	m["format"] = "JSON"
+	m["charset"] = "utf-8"
+	m["timestamp"] = time.Now().Format("2006-01-02 15:04:05")
+	m["version"] = "1.0"
+	m["sign_type"] = "RSA2"
+
+	bizContentJson, err := json.Marshal(bizContent)
+	if err != nil {
+		return map[string]string{}, errors.New("json.Marshal: " + err.Error())
+	}
+	m["biz_content"] = c.NewEncoderToString(bizContentJson)
+	// if rsaType == "RSA2" {
+	m["sign"] = c.GenSign(m)
+	// } else {
+	// 	m["sign"] = c.GenSignRsa1(m)
+	// }
+
+	logs.Warning(m)
+
+	response, err := c.SendToAlipay(m, "post")
+	if err != nil || response == "" {
+		return nil, err
+	}
+	logs.Warning(response)
+	// result := new(common.AliTradeCancelResponse)
+	// err = json.Unmarshal([]byte(response), result)
+	// if err != nil {
+	// 	return result, err
+	// }
+	return response, nil
 }
