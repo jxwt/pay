@@ -47,6 +47,7 @@ type Charge struct {
 	BuyerId     string  `json:"buyerId,omitempty"`
 	SceneType   string  `json:"omitempty"` //h5支付使用
 
+	ExtendParam string
 	IndustryRefluxInfo *IndustryRefluxInfo
 }
 

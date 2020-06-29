@@ -56,6 +56,9 @@ func (i *AliAppClient) MakePayMap(method string, charge *Charge, rsaType string)
 	if charge.BuyerId != "" {
 		bizContent["buyer_id"] = charge.BuyerId
 	}
+	if charge.ExtendParam != "" {
+		bizContent["extend_params"] = charge.ExtendParam
+	}
 	bizContentJson, err := json.Marshal(bizContent)
 	if err != nil {
 		return map[string]string{}, errors.New("json.Marshal: " + err.Error())
@@ -622,14 +625,17 @@ func (i *AliAppClient) MakeH5PayMap(charge *Charge, rsaType string) (string, err
 	if charge.BuyerId != "" {
 		bizContent["buyer_id"] = charge.BuyerId
 	}
-	if charge.IndustryRefluxInfo != nil {
-		d, _ := json.Marshal(charge.IndustryRefluxInfo)
-		extern := &ExtendParam{
-			SysServiceProviderId: "2088521066336121",
-			IndustryRefluxInfo:   string(d),
-		}
-		bizContent["extend_params"] = extern
+	if charge.ExtendParam != "" {
+		bizContent["extend_params"] = charge.ExtendParam
 	}
+	//if charge.IndustryRefluxInfo != nil {
+	//	d, _ := json.Marshal(charge.IndustryRefluxInfo)
+	//	extern := &ExtendParam{
+	//		SysServiceProviderId: "2088521066336121",
+	//		IndustryRefluxInfo:   string(d),
+	//	}
+	//
+	//}
 	bizContentJson, err := json.Marshal(bizContent)
 	if err != nil {
 		return "", errors.New("json.Marshal: " + err.Error())
