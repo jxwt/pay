@@ -40,7 +40,7 @@ type AliAppClient struct {
 
 func (i *AliAppClient) MakePayMap(method string, charge *Charge, rsaType string) (map[string]string, error) {
 	var m = make(map[string]string)
-	var bizContent = make(map[string]string)
+	var bizContent = make(map[string]interface{})
 	m["app_id"] = i.AppID
 	m["method"] = method
 	m["format"] = "JSON"
