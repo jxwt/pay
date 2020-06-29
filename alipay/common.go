@@ -5,11 +5,30 @@ import (
 	"encoding/xml"
 	"errors"
 	"fmt"
+	"github.com/jxwt/pay"
 	"github.com/shopspring/decimal"
 	"strings"
 	"time"
 )
 
+type ExtendParam struct {
+	SysServiceProviderId string `json:"sys_service_provider_id"`
+	IndustryRefluxInfo   string `json:"industry_reflux_info"`
+}
+
+type SceneData struct {
+	LicensePlate   string `json:"license_plate"`
+	StartTime      string `json:"start_time"`
+	ParkingLotName string `json:"parking_lot_name"`
+	CityCode       string `json:"city_code"`
+	ParkingLotId   string `json:"parking_lot_id"`
+}
+
+type IndustryRefluxInfo struct {
+	Channel   string    `json:"channel"`
+	SceneCode string    `json:"scene_code"`
+	SceneData SceneData `json:"scene_data"`
+}
 
 // Charge 支付参数
 type Charge struct {
@@ -27,6 +46,8 @@ type Charge struct {
 	ReUserName  string  `json:"re_user_name,omitempty"`
 	BuyerId     string  `json:"buyerId,omitempty"`
 	SceneType   string  `json:"omitempty"` //h5支付使用
+
+	IndustryRefluxInfo *IndustryRefluxInfo
 }
 
 // RandomStr 获取一个随机字符串
@@ -38,7 +59,7 @@ func RandomStr() string {
 func GetAlipay(url string) (AliWebQueryResult, error) {
 	var xmlRe AliWebQueryResult
 
-	re, err := HTTPSC.GetData(url)
+	re, err := pay.HTTPSC.GetData(url)
 	if err != nil {
 		return xmlRe, errors.New("HTTPSC.PostData: " + err.Error())
 	}
@@ -53,7 +74,7 @@ func GetAlipay(url string) (AliWebQueryResult, error) {
 func GetAlipayApp(urls string) (AliWebAppQueryResult, error) {
 	var aliPay AliWebAppQueryResult
 
-	re, err := HTTPSC.GetData(urls)
+	re, err := pay.HTTPSC.GetData(urls)
 	if err != nil {
 		return aliPay, errors.New("HTTPSC.PostData: " + err.Error())
 	}

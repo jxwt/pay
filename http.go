@@ -1,4 +1,4 @@
-package alipay
+package pay
 
 import (
 	"crypto/tls"
@@ -30,11 +30,6 @@ func init() {
 // HTTPSClient HTTPS客户端结构
 type HTTPSClient struct {
 	http.Client
-}
-
-// GetDefaultClient 返回默认的客户端
-func GetDefaultClient() *HTTPSClient {
-	return HTTPSC
 }
 
 // NewHTTPSClient 获取默认https客户端

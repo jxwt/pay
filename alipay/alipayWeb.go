@@ -35,38 +35,38 @@ func DefaultAliWebClient() *AliWebClient {
 }
 
 // Pay 实现支付接口
-func (this *AliWebClient) Pay(charge *Charge) (map[string]string, error) {
+func (i *AliWebClient) Pay(charge *Charge) (map[string]string, error) {
 	var m = make(map[string]string)
 	m["systemsService"] = "create_direct_pay_by_user"
-	m["partner"] = this.PartnerID
+	m["partner"] = i.PartnerID
 	m["_input_charset"] = "UTF-8"
 	m["notify_url"] = charge.CallbackURL
 	m["return_url"] = charge.ReturnURL // 注意链接不能有&符号，否则会签名错误
 	m["out_trade_no"] = charge.TradeNum
 	m["subject"] = TruncatedText(charge.Describe, 32)
 	m["total_fee"] = AliyunMoneyFeeToString(charge.MoneyFee)
-	m["seller_id"] = this.SellerID
+	m["seller_id"] = i.SellerID
 
-	sign := this.GenSign(m)
+	sign := i.GenSign(m)
 
 	m["sign"] = sign
 	m["sign_type"] = "RSA"
 	return map[string]string{"url": ToURL("https://mapi.alipay.com/gateway.do", m)}, nil
 }
 
-func (this *AliWebClient) PayToClient(charge *Charge) (map[string]string, error) {
+func (i *AliWebClient) PayToClient(charge *Charge) (map[string]string, error) {
 	return map[string]string{}, errors.New("暂未开发该功能")
 }
 
 // 订单查询
-func (this *AliWebClient) QueryOrder(outTradeNo string) (AliWebQueryResult, error) {
+func (i *AliWebClient) QueryOrder(outTradeNo string) (AliWebQueryResult, error) {
 	var m = make(map[string]string)
 	m["systemsService"] = "single_trade_query"
-	m["partner"] = this.PartnerID
+	m["partner"] = i.PartnerID
 	m["_input_charset"] = "utf-8"
 	m["out_trade_no"] = outTradeNo
 
-	sign := this.GenSign(m)
+	sign := i.GenSign(m)
 
 	m["sign"] = sign
 	m["sign_type"] = "RSA"
@@ -74,7 +74,7 @@ func (this *AliWebClient) QueryOrder(outTradeNo string) (AliWebQueryResult, erro
 }
 
 // GenSign 产生签名
-func (this *AliWebClient) GenSign(m map[string]string) string {
+func (i *AliWebClient) GenSign(m map[string]string) string {
 	var data []string
 	for k, v := range m {
 		if v != "" && k != "sign" && k != "sign_type" {
@@ -89,7 +89,7 @@ func (this *AliWebClient) GenSign(m map[string]string) string {
 		panic(err)
 	}
 	hashByte := s.Sum(nil)
-	signByte, err := this.PrivateKey.Sign(rand.Reader, hashByte, crypto.SHA1)
+	signByte, err := i.PrivateKey.Sign(rand.Reader, hashByte, crypto.SHA1)
 	if err != nil {
 		panic(err)
 	}
@@ -97,7 +97,7 @@ func (this *AliWebClient) GenSign(m map[string]string) string {
 }
 
 // CheckSign 检测签名
-func (this *AliWebClient) CheckSign(signData, sign string) {
+func (i *AliWebClient) CheckSign(signData, sign string) {
 	signByte, err := base64.StdEncoding.DecodeString(sign)
 	if err != nil {
 		panic(err)
@@ -108,7 +108,7 @@ func (this *AliWebClient) CheckSign(signData, sign string) {
 		panic(err)
 	}
 	hash := s.Sum(nil)
-	err = rsa.VerifyPKCS1v15(this.PublicKey, crypto.SHA1, hash, signByte)
+	err = rsa.VerifyPKCS1v15(i.PublicKey, crypto.SHA1, hash, signByte)
 	if err != nil {
 		panic(err)
 	}

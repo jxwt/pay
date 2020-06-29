@@ -75,21 +75,13 @@ type WeChatQueryResult struct {
 	WeChatReResult
 	WechatReturnData
 	WechatResultData
+	PayRefundResponse
 	TradeState     string `xml:"trade_state" json:"trade_state,omitempty"`
 	TradeStateDesc string `xml:"trade_state_desc" json:"trade_state_desc,omitempty"`
 }
 
 // WxPayRefundResponse 微信退款请求返回
 type PayRefundResponse struct {
-	ReturnCode          string `xml:"return_code"`
-	ReturnMsg           string `xml:"return_msg"`
-	ResultCode          string `xml:"result_code"`
-	ErrCode             string `xml:"err_code"`
-	ErrCodeDes          string `xml:"err_code_des"`
-	AppID               string `xml:"appid"`
-	MchID               string `xml:"mch_id"`
-	NonceStr            string `xml:"nonce_str"`
-	Sign                string `xml:"sign"`
 	TransactionID       string `xml:"transaction_id"`
 	OutTradeNo          string `xml:"out_trade_no"`
 	OutRefundNo         string `xml:"out_refund_no"`
@@ -111,9 +103,10 @@ type PayRefundRequest struct {
 	OutRefundNo string // 商户退款单号（确保唯一性）
 	//TransactionID string // 需要退款的微信订单号
 	RefundDesc string // 退款理由
-	TotalFee   int    // 订单的金额
-	RefundFee  int    // 退款的金额
+	TotalFee   float64    // 订单的金额
+	RefundFee  float64    // 退款的金额
 	OutTradeNo string // 商户自定义单号（需要退款的单号）
+	OpenId    string
 }
 
 // MicroPayRequest 付款码支付请求

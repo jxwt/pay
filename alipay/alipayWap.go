@@ -40,18 +40,18 @@ func GetDefaultAliWapClient() *AliWapClient {
 	return DefaultAliWapClient
 }
 
-func (this *AliWapClient) Pay(charge *Charge) (map[string]string, error) {
+func (i *AliWapClient) Pay(charge *Charge) (map[string]string, error) {
 	return nil, nil
 }
 
-func (this *AliWapClient) PayToClient(charge *Charge) (map[string]string, error) {
+func (i *AliWapClient) PayToClient(charge *Charge) (map[string]string, error) {
 	return map[string]string{}, errors.New("暂未开发该功能")
 }
 
-func (this *AliWapClient) MakePayMap(method string, charge *Charge, rsaType string) (map[string]string, error) {
+func (i *AliWapClient) MakePayMap(method string, charge *Charge, rsaType string) (map[string]string, error) {
 	var m = make(map[string]string)
 	var bizContent = make(map[string]string)
-	m["app_id"] = this.AppID
+	m["app_id"] = i.AppID
 	m["method"] = "alipay.trade.wap.pay"
 	m["format"] = "JSON"
 	m["charset"] = "utf-8"
@@ -74,19 +74,19 @@ func (this *AliWapClient) MakePayMap(method string, charge *Charge, rsaType stri
 	}
 	m["biz_content"] = string(bizContentJson)
 	if rsaType == "RSA2" {
-		m["sign"] = this.GenSign(m)
+		m["sign"] = i.GenSign(m)
 	} else {
-		m["sign"] = this.GenSignRsa1(m)
+		m["sign"] = i.GenSignRsa1(m)
 	}
 
 	logs.Warning(m)
 	return m, nil
 }
 
-func (this *AliWapClient) MakeH5PayMap(method string, charge *Charge, rsaType string) (string, error) {
+func (i *AliWapClient) MakeH5PayMap(method string, charge *Charge, rsaType string) (string, error) {
 	var m = make(map[string]string)
 	var bizContent = make(map[string]string)
-	m["app_id"] = this.AppID
+	m["app_id"] = i.AppID
 	m["method"] = "alipay.trade.wap.pay"
 	m["format"] = "JSON"
 	m["charset"] = "utf-8"
@@ -109,9 +109,9 @@ func (this *AliWapClient) MakeH5PayMap(method string, charge *Charge, rsaType st
 	}
 	m["biz_content"] = string(bizContentJson)
 	if rsaType == "RSA2" {
-		m["sign"] = this.GenSign(m)
+		m["sign"] = i.GenSign(m)
 	} else {
-		m["sign"] = this.GenSignRsa1(m)
+		m["sign"] = i.GenSignRsa1(m)
 	}
 	logs.Warning(m)
 	// 转form表单
@@ -137,17 +137,17 @@ func (this *AliWapClient) MakeH5PayMap(method string, charge *Charge, rsaType st
 	return fmt.Sprintf(formatStr, "https://openapi.alipay.com/gateway.do?charset=utf-8", buf.String()), nil
 }
 
-func (this *AliWapClient) ToPay(charge *Charge) (string, error) {
-	payMap, err := this.MakePayMap("alipay.trade.wap.pay", charge, "RSA2")
+func (i *AliWapClient) ToPay(charge *Charge) (string, error) {
+	payMap, err := i.MakePayMap("alipay.trade.wap.pay", charge, "RSA2")
 	if err != nil {
 		return "", err
 	}
-	return this.SendToAlipay(payMap, "post")
+	return i.SendToAlipay(payMap, "post")
 }
 
 // ToH5Pay 支付宝h5支付,返回请求参数
-func (this *AliWapClient) ToH5Pay(charge *Charge) (string, error) {
-	formData, err := this.MakeH5PayMap("alipay.trade.wap.pay", charge, "RSA2")
+func (i *AliWapClient) ToH5Pay(charge *Charge) (string, error) {
+	formData, err := i.MakeH5PayMap("alipay.trade.wap.pay", charge, "RSA2")
 	if err != nil {
 		return "", err
 	}
@@ -155,7 +155,7 @@ func (this *AliWapClient) ToH5Pay(charge *Charge) (string, error) {
 	return formData, nil
 }
 
-func (this *AliWapClient) SendToAlipay(m map[string]string, method string) (string, error) {
+func (i *AliWapClient) SendToAlipay(m map[string]string, method string) (string, error) {
 	req := httplib.Get("https://openapi.alipay.com/gateway.do")
 	if method == "post" {
 		req = httplib.Post("https://openapi.alipay.com/gateway.do")
@@ -172,7 +172,7 @@ func (this *AliWapClient) SendToAlipay(m map[string]string, method string) (stri
 }
 
 // GenSign 产生签名
-func (this *AliWapClient) GenSign(m map[string]string) string {
+func (i *AliWapClient) GenSign(m map[string]string) string {
 	var data []string
 
 	for k, v := range m {
@@ -189,7 +189,7 @@ func (this *AliWapClient) GenSign(m map[string]string) string {
 		panic(err)
 	}
 	hashByte := s.Sum(nil)
-	signByte, err := this.PrivateKey.Sign(rand.Reader, hashByte, crypto.SHA256)
+	signByte, err := i.PrivateKey.Sign(rand.Reader, hashByte, crypto.SHA256)
 	if err != nil {
 		panic(err)
 	}
@@ -197,7 +197,7 @@ func (this *AliWapClient) GenSign(m map[string]string) string {
 }
 
 // GenSign 产生签名
-func (this *AliWapClient) GenSignRsa1(m map[string]string) string {
+func (i *AliWapClient) GenSignRsa1(m map[string]string) string {
 	var data []string
 
 	for k, v := range m {
@@ -214,7 +214,7 @@ func (this *AliWapClient) GenSignRsa1(m map[string]string) string {
 		panic(err)
 	}
 	hashByte := s.Sum(nil)
-	signByte, err := this.PrivateKey.Sign(rand.Reader, hashByte, crypto.SHA1)
+	signByte, err := i.PrivateKey.Sign(rand.Reader, hashByte, crypto.SHA1)
 	if err != nil {
 		panic(err)
 	}

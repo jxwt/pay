@@ -7,7 +7,7 @@ import (
 	"encoding/xml"
 	"errors"
 	"fmt"
-	"github.com/jxwt/pay/alipay"
+	"github.com/jxwt/pay"
 	"github.com/jxwt/tools"
 	"github.com/shopspring/decimal"
 	"io"
@@ -31,7 +31,14 @@ type Charge struct {
 	CheckName   bool    `json:"check_name,omitempty"`
 	ReUserName  string  `json:"re_user_name,omitempty"`
 	BuyerId     string  `json:"buyerId,omitempty"`
-	SceneType   string  `json:"omitempty"` //h5支付使用
+
+
+	SceneInfo   string  `json:"omitempty"` //h5支付使用
+
+	AppType 	string  // app场景名称
+	AppName 	string  // app名称
+	BundleId 		string  // ios传
+	PackageName string  // android传
 }
 
 //PayCallback 支付返回
@@ -71,7 +78,7 @@ func RandomStr() string {
 }
 
 // 微信企业付款到零钱
-func WachatCompanyChange(mchAppid, mchid, key string, conn *alipay.HTTPSClient, charge *Charge) (map[string]string, error) {
+func WachatCompanyChange(mchAppid, mchid, key string, conn *pay.HTTPSClient, charge *Charge) (map[string]string, error) {
 	var m = make(map[string]string)
 	m["mch_appid"] = mchAppid
 	m["mchid"] = mchid
@@ -159,7 +166,7 @@ func FilterTheSpecialSymbol(data string) string {
 }
 
 //对微信下订单或者查订单
-func PostWechat(url string, data map[string]string, h *alipay.HTTPSClient) (WeChatQueryResult, error) {
+func PostWechat(url string, data map[string]string, h *pay.HTTPSClient) (WeChatQueryResult, error) {
 	var xmlRe WeChatQueryResult
 	buf := bytes.NewBufferString("")
 
@@ -167,11 +174,11 @@ func PostWechat(url string, data map[string]string, h *alipay.HTTPSClient) (WeCh
 		buf.WriteString(fmt.Sprintf("<%s><![CDATA[%s]]></%s>", k, v, k))
 	}
 	xmlStr := fmt.Sprintf("<xml>%s</xml>", buf.String())
-	hc := new(alipay.HTTPSClient)
+	hc := new(pay.HTTPSClient)
 	if h != nil {
 		hc = h
 	} else {
-		hc = alipay.HTTPSC
+		hc = pay.HTTPSC
 	}
 
 	re, err := hc.PostData(url, "text/xml:charset=UTF-8", xmlStr)
@@ -240,4 +247,17 @@ func XmlToMap(xmlData []byte) map[string]string {
 		panic(err)
 	}
 	return m
+}
+
+// WechatCallBackSuccessRes 构建微信回调成功返回
+func WechatCallBackSuccessRes() string {
+	var m = make(map[string]string)
+	m["return_code"] = "SUCCESS"
+	m["return_msg"] = "OK"
+	buf := bytes.NewBufferString("")
+	for k, v := range m {
+		buf.WriteString(fmt.Sprintf("<%s><![CDATA[%s]]></%s>", k, v, k))
+	}
+	xmlStr := fmt.Sprintf("<xml>%s</xml>", buf.String())
+	return xmlStr
 }
