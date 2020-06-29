@@ -30,6 +30,9 @@ func (i *WxClient) PayRefund(payRefundReq *PayRefundRequest) (*WeChatQueryResult
 	}
 	m := make(map[string]string)
 	m["appid"] = i.AppID
+	if i.SubMchId != "" {
+		m["sub_mch_id"] = i.SubMchId
+	}
 	m["mch_id"] = i.MchID
 	m["nonce_str"] = RandomStr()
 	m["out_trade_no"] = payRefundReq.OutTradeNo
@@ -49,7 +52,7 @@ func (i *WxClient) PayRefund(payRefundReq *PayRefundRequest) (*WeChatQueryResult
 		log.Printf("clientPost.Post error: %v", err)
 		return nil, err
 	}
-	return &result.PayRefundResponse, nil
+	return &result, nil
 }
 
 // PayReverse 撤销订单
