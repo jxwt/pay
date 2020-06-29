@@ -23,7 +23,7 @@ func (i *WxClient) WithCert(certFile, keyFile string) error {
 // OutTradeNo 需要退款的微信订单号
 // refundDesc 退款理由
 // totalFee,refundFee 订单的金额,与退款的金额
-func (i *WxClient) PayRefund(payRefundReq *PayRefundRequest) (*PayRefundResponse, error) {
+func (i *WxClient) PayRefund(payRefundReq *PayRefundRequest) (*WeChatQueryResult, error) {
 	if err := i.WithCert(i.CertPEM, i.KeyPEM); err != nil {
 		log.Printf("PayRefund err:%v\n", err)
 		return nil, err

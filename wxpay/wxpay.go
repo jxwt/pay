@@ -16,6 +16,7 @@ type WxClient struct {
 	Key         string
 	PrivateKey  []byte
 	CallbackURL string
+	SubMchId 	string
 
 	CertPEM string // cert证书
 	KeyPEM  string // 密钥证书
@@ -23,7 +24,7 @@ type WxClient struct {
 	httpsClient *pay.HTTPSClient // 双向证书链接
 }
 
-func InitWxClient(AppID string, MchID string, Key string, PrivateKey string, CallbackURL string)  *WxClient {
+func InitWxClient(AppID string, MchID string, Key string, PrivateKey string, CallbackURL string, subMchId ...string)  *WxClient {
 	c := &WxClient{
 		AppID:       AppID,
 		MchID:       MchID,
@@ -31,6 +32,9 @@ func InitWxClient(AppID string, MchID string, Key string, PrivateKey string, Cal
 		PrivateKey:  []byte(PrivateKey),
 		CallbackURL: CallbackURL,
 		httpsClient: nil,
+	}
+	if len(subMchId) > 0 {
+		c.SubMchId = subMchId[0]
 	}
 
 	return c
@@ -123,6 +127,9 @@ func (i *WxClient) WxUnifiedOrder(charge *Charge, tradeType string) (WeChatQuery
 	m["notify_url"] = i.CallbackURL
 	m["trade_type"] = tradeType
 	m["sign_type"] = "MD5"
+	if i.SubMchId != "" {
+		m["sub_mch_id"] = i.SubMchId
+	}
 	if charge.OpenID != "" {
 		m["openid"] = charge.OpenID
 	}
