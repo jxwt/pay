@@ -11,39 +11,6 @@ import (
 	"strings"
 )
 
-func AliWebCallback(w http.ResponseWriter, r *http.Request) (*AliWebPayResult, error) {
-	var m = make(map[string]string)
-	var signSlice []string
-	r.ParseForm()
-	for k, v := range r.Form {
-		// k不会有多个值的情况
-		m[k] = v[0]
-		if k == "sign" || k == "sign_type" {
-			continue
-		}
-		signSlice = append(signSlice, fmt.Sprintf("%s=%s", k, v[0]))
-	}
-
-	sort.Strings(signSlice)
-	signData := strings.Join(signSlice, "&")
-	if m["sign_type"] != "RSA" {
-		//错误日志
-		logs.Error("签名类型未知")
-	}
-
-	DefaultAliWebClient().CheckSign(signData, m["sign"])
-
-	var aliPay AliWebPayResult
-	err := MapStringToStruct(m, &aliPay)
-	if err != nil {
-		w.Write([]byte("error"))
-		logs.Error(err)
-	}
-
-	w.Write([]byte("success"))
-	return &aliPay, nil
-}
-
 func MapStringToStruct(m map[string]string, i interface{}) error {
 	bin, err := json.Marshal(m)
 	if err != nil {
