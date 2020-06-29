@@ -87,7 +87,6 @@ type PayRefundResponse struct {
 	RefundFee           int    `xml:"refund_fee"`
 	SettlementRefundFee int    `xml:"settlement_refund_fee"`
 	SettlementTotalFee  int    `xml:"settlement_total_fee"`
-	FeeType             string `xml:"fee_type"`
 	CashRefundFee       int    `xml:"cash_refund_fee"`
 	CouponRefundFee     int    `xml:"coupon_refund_fee"`
 	CouponRefundCount   int    `xml:"coupon_refund_count"`
