@@ -82,17 +82,12 @@ type WeChatQueryResult struct {
 
 // WxPayRefundResponse 微信退款请求返回
 type PayRefundResponse struct {
-	TransactionID       string `xml:"transaction_id"`
-	OutTradeNo          string `xml:"out_trade_no"`
 	OutRefundNo         string `xml:"out_refund_no"`
 	RefundID            string `xml:"refund_id"`
 	RefundFee           int    `xml:"refund_fee"`
 	SettlementRefundFee int    `xml:"settlement_refund_fee"`
-	TotalFee            int    `xml:"total_fee"`
 	SettlementTotalFee  int    `xml:"settlement_total_fee"`
 	FeeType             string `xml:"fee_type"`
-	CashFee             int    `xml:"cash_fee"`
-	CashFeeType         string `xml:"cash_fee_type"`
 	CashRefundFee       int    `xml:"cash_refund_fee"`
 	CouponRefundFee     int    `xml:"coupon_refund_fee"`
 	CouponRefundCount   int    `xml:"coupon_refund_count"`
