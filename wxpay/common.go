@@ -1,6 +1,5 @@
 package wxpay
 
-
 import (
 	"bytes"
 	"crypto/md5"
@@ -11,11 +10,11 @@ import (
 	"github.com/jxwt/pay/alipay"
 	"github.com/jxwt/tools"
 	"github.com/shopspring/decimal"
+	"io"
 	"sort"
 	"strings"
 	"time"
 )
-
 
 // Charge 支付参数
 type Charge struct {
@@ -65,7 +64,6 @@ type BaseResult struct {
 	UserInfo      string // 支付账号信息(有可能有，有可能没有)
 	ThirdDiscount int64  // 第三方优惠
 }
-
 
 //RandomStr 获取一个随机字符串
 func RandomStr() string {
@@ -216,4 +214,30 @@ func struct2Map(obj interface{}) (map[string]string, error) {
 
 	err2 := json.Unmarshal(j1, &j2)
 	return j2, err2
+}
+
+func XmlToMap(xmlData []byte) map[string]string {
+	decoder := xml.NewDecoder(bytes.NewReader(xmlData))
+	m := make(map[string]string)
+	var token xml.Token
+	var err error
+	var k string
+	for token, err = decoder.Token(); err == nil; token, err = decoder.Token() {
+		if v, ok := token.(xml.StartElement); ok {
+			k = v.Name.Local
+			continue
+		}
+		if v, ok := token.(xml.CharData); ok {
+			data := string(v.Copy())
+			if strings.TrimSpace(data) == "" {
+				continue
+			}
+			m[k] = data
+		}
+	}
+
+	if err != nil && err != io.EOF {
+		panic(err)
+	}
+	return m
 }
