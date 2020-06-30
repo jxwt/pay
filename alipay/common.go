@@ -145,3 +145,16 @@ type ReceiverList struct {
 	Name    string `json:"name"`    // 分账方全称
 	Memo    string `json:"memo"`    // 分账关系描述
 }
+
+// EncryptedDataStruct .
+type EncryptedDataStruct struct {
+	Response string `json:"response"`
+	Sign     string `json:"sign"`
+}
+
+// AliParsePhoneNumberResponse 解析手机号返回
+type AliParsePhoneNumberResponse struct {
+	Code   string `json:"code"`
+	Msg    string `json:"msg"`
+	Mobile string `json:"mobile"`
+}

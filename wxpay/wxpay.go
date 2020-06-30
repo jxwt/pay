@@ -6,7 +6,6 @@ import (
 	"github.com/astaxie/beego/logs"
 	"github.com/jxwt/pay"
 	"github.com/jxwt/tools"
-	"parking-cloud/utils/gopay/util"
 	"strconv"
 	"strings"
 	"time"
@@ -183,11 +182,11 @@ func (i *WxClient) MicroPay(req *MicroPayRequest) (*WeChatQueryResult, error) {
 	var m = make(map[string]string)
 	m["appid"] = i.AppID
 	m["mch_id"] = i.MchID
-	m["nonce_str"] = util.RandomStr()
+	m["nonce_str"] = RandomStr()
 	m["body"] = req.Remark
 	m["out_trade_no"] = req.OutTradeNo
 	m["total_fee"] = strconv.Itoa(req.TotalFee)
-	m["spbill_create_ip"] = util.LocalIP()
+	m["spbill_create_ip"] = tools.GetLocalAddr()
 	m["auth_code"] = req.AuthCode
 
 	sign, err := WechatGenSign(i.Key, m)
