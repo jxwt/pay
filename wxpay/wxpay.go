@@ -6,6 +6,8 @@ import (
 	"github.com/astaxie/beego/logs"
 	"github.com/jxwt/pay"
 	"github.com/jxwt/tools"
+	"parking-cloud/utils/gopay/util"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -173,3 +175,31 @@ func (i *WxClient) QueryOrder(tradeNum string) (WeChatQueryResult, error) {
 }
 
 
+// MicroPay 微信付款码支付
+// OutRefundNo 为后端自定义的随机字符串（尽量唯一） 与 商户退款单号（确保唯一性）
+// TotalFee 订单的金额
+// AuthCode 用户的授权码(条形码)
+func (i *WxClient) MicroPay(req *MicroPayRequest) (*WeChatQueryResult, error) {
+	var m = make(map[string]string)
+	m["appid"] = i.AppID
+	m["mch_id"] = i.MchID
+	m["nonce_str"] = util.RandomStr()
+	m["body"] = req.Remark
+	m["out_trade_no"] = req.OutTradeNo
+	m["total_fee"] = strconv.Itoa(req.TotalFee)
+	m["spbill_create_ip"] = util.LocalIP()
+	m["auth_code"] = req.AuthCode
+
+	sign, err := WechatGenSign(i.Key, m)
+	if err != nil {
+		return nil, errors.New("MicroPay.sign: " + err.Error())
+	}
+
+	m["sign"] = sign
+
+	xmlRe, err := PostWechat("https://api.mch.weixin.qq.com/pay/micropay", m, nil)
+	if err != nil {
+		return &xmlRe, err
+	}
+	return &xmlRe, nil
+}
