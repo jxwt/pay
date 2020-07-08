@@ -16,16 +16,12 @@ import (
 	"github.com/jxwt/tools"
 	"io/ioutil"
 	"net/http"
-	"strconv"
 	"strings"
 	"time"
 )
 
 // PublicPemNo 聚鑫公钥证书编号
 const PublicPemNo = "339B73BB805706D6FB26DBAE1041C923FC135792"
-
-// CertPEMNo 私钥证书编号
-const CertPEMNo = "66A25657AA357B0F732313535B77D45DD39B440E"
 
 const (
 	// WxMediaUploadURL 微信图片上传url
@@ -34,20 +30,10 @@ const (
 
 
 // WxMediaUpLoadHeaderAuthorization 图片上传需要的header
-const WxMediaUpLoadHeaderAuthorization = `WECHATPAY2-SHA256-RSA2048 mchid="1592345211",nonce_str="%s",timestamp="%s",serial_no="%s",signature="%s"`
+const WxMediaUpLoadHeaderAuthorization = `WECHATPAY2-SHA256-RSA2048 mchid="%s",nonce_str="%s",timestamp="%d",serial_no="%s",signature="%s"`
 
 // WxMediaUpLoadBody 图片上传需要的body
-const WxMediaUpLoadBody = `--boundary\r\n
-Content-Disposition:form-data;name="meta";\r\n
-Content-Type:application/json\r\n
-\r\n
-{"filename":"#file","sha256":"#sha256"}\r\n
---boundary\r\n
-Content-Disposition:form-data;name="file";filename="#file";\r\n
-Content-Type:image/jpg\r\n
-\r\n
-#body\r\n
---boundary--\r\n`
+const WxMediaUpLoadBody = "--boundary\r\nContent-Disposition:form-data;name=\"meta\";\r\nContent-Type:application/json\r\n\r\n{\"filename\":\"#file\",\"sha256\":\"#sha256\"}\r\n--boundary\r\nContent-Disposition:form-data;name=\"file\";filename=\"#file\";\r\nContent-Type:image/jpg\r\n\r\n#body\r\n--boundary--\r\n"
 
 // Applyment4subRequest 提交申请单请求
 // https://pay.weixin.qq.com/wiki/doc/apiv3/wxpay/tool/applyment4sub/chapter3_1.shtml
@@ -240,7 +226,6 @@ type WxMediaUpLoadRequest struct {
 
 // WxMediaUpLoad 微信图片上传
 func (i *WxClient) WxMediaUpLoad(file string, fileName string) error {
-
 	// 对图片文件进行sha256计算
 	h := sha256.New()
 	h.Write([]byte(file))
@@ -248,6 +233,7 @@ func (i *WxClient) WxMediaUpLoad(file string, fileName string) error {
 
 	timestamp := time.Now().Unix()
 	nonceStr := tools.GetRandomString(32)
+	//nonceStr := "L4s1UE5KRC2p5Kh30Kh8GAfTxpSGXXMd"
 	// 请求构建 请求加签
 	req := &WxMediaUpLoadRequest{
 		FileName: fileName,
@@ -259,14 +245,10 @@ func (i *WxClient) WxMediaUpLoad(file string, fileName string) error {
 		return err
 	}
 	logs.Info("待签名的body", string(body))
-	sign, err := WxV3Sign("POST", `/v3/merchant/media/upload`, nonceStr, string(body), timestamp, i.KeyPEM)
-	if err != nil {
-		logs.Warning("WxMediaUpLoad WxV3Sign err", err)
-		return err
-	}
+	sign := WxV3Sign("POST", `/v3/merchant/media/upload`, nonceStr, string(body), timestamp, i.KeyPEM)
 	logs.Info("签名后的sign", sign)
 	// 请求构建与发送
-	headerAuthorization := fmt.Sprintf(WxMediaUpLoadHeaderAuthorization, nonceStr, strconv.FormatInt(timestamp, 10), CertPEMNo, sign)
+	headerAuthorization := fmt.Sprintf(WxMediaUpLoadHeaderAuthorization, i.AppID, nonceStr, timestamp, i.KeyPemNo, sign)
 	logs.Info("headerAuthorization值为", headerAuthorization)
 
 	reqBody := strings.ReplaceAll(WxMediaUpLoadBody, "#file", fileName)
@@ -296,20 +278,44 @@ func (i *WxClient) WxMediaUpLoad(file string, fileName string) error {
 }
 
 // WxV3Sign 微信v3构建签名串
-func WxV3Sign(method string, uri string, nonceStr string, body string, timestemp int64, privateKey string) (string, error) {
+func WxV3Sign(method string, uri string, nonceStr string, body string, timestemp int64, privateKey string) string {
 	// 构建签名meta
-	pre := `%s\n%s\n%s\n%s\n%s\n` // method uri timestemp randomstr body
-	pre = fmt.Sprintf(pre, method, uri, strconv.FormatInt(timestemp, 10), nonceStr, body)
-
-	fmt.Println("签名字符串:", pre)
-
-	h := crypto.Hash.New(crypto.SHA256)
+	pre := "%s\n%s\n%d\n%s\n%s\n" // method uri timestemp randomstr body
+	pre = fmt.Sprintf(pre, method, uri, timestemp, nonceStr, body)
+	blocks, _  := pem.Decode(FormatPrivateKey(privateKey))
+	key, _ := x509.ParsePKCS8PrivateKey(blocks.Bytes)
+	st := key.(*rsa.PrivateKey)
+	fmt.Println(st.D)
+	h := sha256.New()
 	h.Write([]byte(pre))
-	hashed := h.Sum(nil)
-	// 进行rsa加密签名
-	signedData, err := rsa.SignPKCS1v15(rand.Reader, WxPriStrToRSAPrivateKey(privateKey), crypto.SHA256, hashed)
+	digest := h.Sum(nil)
+	s, _ := rsa.SignPKCS1v15(rand.Reader, key.(*rsa.PrivateKey), crypto.SHA256, digest)
+	return  base64.StdEncoding.EncodeToString(s)
+
+}
+
+func (i *WxClient) WxV3GetCertificates() {
+	nonceStr := tools.GetRandomString(32)
+	now := time.Now().Unix()
+	sign := WxV3Sign("GET", "/v3/certificates", nonceStr, "", now, i.KeyPEM)
+	fmt.Println(sign)
+	headerAuthorization := fmt.Sprintf(WxMediaUpLoadHeaderAuthorization, i.AppID, nonceStr, now, i.KeyPemNo, sign)
+	client := &http.Client{}
+	request, err := http.NewRequest("GET", "https://api.mch.weixin.qq.com/v3/certificates", nil)
+	request.Header.Add("Authorization", headerAuthorization)
+	request.Header.Add("User-Agent", "https://zh.wikipedia.org/wiki/User_agent")
+	request.Header.Set("Accept", "application/json")
+
+	resp, err := client.Do(request)
 	if err != nil {
-		return "", err
+		logs.Warning("http Do err", err)
+		return
 	}
-	return base64.StdEncoding.EncodeToString(signedData), err
+	defer resp.Body.Close()
+	resultBody, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		logs.Error(err)
+		return
+	}
+	logs.Info(string(resultBody))
 }

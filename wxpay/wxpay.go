@@ -23,6 +23,7 @@ type WxClient struct {
 	KeyPEM  string // 密钥证书
 
 	httpsClient *pay.HTTPSClient // 双向证书链接
+	KeyPemNo  string
 }
 
 func InitWxClient(AppID string, MchID string, Key string, PrivateKey string, CallbackURL string, subMchId ...string)  *WxClient {
