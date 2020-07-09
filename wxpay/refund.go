@@ -9,7 +9,6 @@ import (
 	"strings"
 )
 
-
 // WithCert 附着商户证书
 func (i *WxClient) WithCert(certFile, keyFile string) error {
 	certByte := FormatCeritficate(certFile)
@@ -79,7 +78,6 @@ func (i *WxClient) PayReverse(tradeNum string) (*WeChatQueryResult, error) {
 	}
 	return &result, nil
 }
-
 
 // FormatPrivateKey 格式化私钥
 func FormatPrivateKey(raw string) (result []byte) {

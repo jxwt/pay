@@ -96,11 +96,11 @@ type PayRefundResponse struct {
 type PayRefundRequest struct {
 	OutRefundNo string // 商户退款单号（确保唯一性）
 	//TransactionID string // 需要退款的微信订单号
-	RefundDesc string // 退款理由
-	TotalFee   float64    // 订单的金额
-	RefundFee  float64    // 退款的金额
-	OutTradeNo string // 商户自定义单号（需要退款的单号）
-	OpenId    string
+	RefundDesc string  // 退款理由
+	TotalFee   float64 // 订单的金额
+	RefundFee  float64 // 退款的金额
+	OutTradeNo string  // 商户自定义单号（需要退款的单号）
+	OpenId     string
 }
 
 // MicroPayRequest 付款码支付请求

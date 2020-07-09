@@ -17,16 +17,16 @@ type WxClient struct {
 	Key         string
 	PrivateKey  []byte
 	CallbackURL string
-	SubMchId 	string
+	SubMchId    string
 
 	CertPEM string // cert证书
 	KeyPEM  string // 密钥证书
 
 	httpsClient *pay.HTTPSClient // 双向证书链接
-	KeyPemNo  string
+	KeyPemNo    string
 }
 
-func InitWxClient(AppID string, MchID string, Key string, PrivateKey string, CallbackURL string, subMchId ...string)  *WxClient {
+func InitWxClient(AppID string, MchID string, Key string, PrivateKey string, CallbackURL string, subMchId ...string) *WxClient {
 	c := &WxClient{
 		AppID:       AppID,
 		MchID:       MchID,
@@ -173,7 +173,6 @@ func (i *WxClient) QueryOrder(tradeNum string) (WeChatQueryResult, error) {
 
 	return PostWechat("https://api.mch.weixin.qq.com/pay/orderquery", m, nil)
 }
-
 
 // MicroPay 微信付款码支付
 // OutRefundNo 为后端自定义的随机字符串（尽量唯一） 与 商户退款单号（确保唯一性）

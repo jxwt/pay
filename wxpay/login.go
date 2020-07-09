@@ -35,20 +35,19 @@ type RespWXSmall struct {
 	ErrMsg     string `json:"errMsg"`      //错误信息
 }
 
-
 type WxLoginInfoResult struct {
-	OpenID    string `json:"openid"`
-	NickName  string `json:"nickName"`
-	Gender    uint8  `json:"gender"`
+	OpenID     string `json:"openid"`
+	NickName   string `json:"nickName"`
+	Gender     uint8  `json:"gender"`
 	Sex        int    `json:"sex"`
-	Language  string `json:"language"`
-	City      string `json:"city"`
-	Province  string `json:"province"`
-	Country   string `json:"country"`
-	AvatarURL string `json:"headimgurl"`
-	UnionID   string `json:"unionId"`
+	Language   string `json:"language"`
+	City       string `json:"city"`
+	Province   string `json:"province"`
+	Country    string `json:"country"`
+	AvatarURL  string `json:"headimgurl"`
+	UnionID    string `json:"unionId"`
 	HeadImgUrl string `json:"headimgurl"`
-	Watermark struct {
+	Watermark  struct {
 		Timestamp int    `json:"timestamp"`
 		Appid     string `json:"appid"`
 	} `json:"watermark"`
@@ -69,7 +68,6 @@ type WxAppLoginAccessResult struct {
 	Scope        string `json:"scope"`
 	Unionid      string `json:"unionid"`
 }
-
 
 type WxLoginGetPhone struct {
 	PhoneNumber     string `json:"phoneNumber"`
@@ -172,7 +170,6 @@ func (i *WxClient) PKCS7UnPadding(plantText []byte) []byte {
 	return plantText
 }
 
-
 func (i *WxClient) GetPhoneNumber(iv string, encryptData string, code string) (WxLoginGetPhone, error) {
 	session := i.GetOpenSession(code)
 	if session == nil {
@@ -209,7 +206,6 @@ func (i *WxClient) DecryptWXPhone(sessionKey, encryptData, iv string) (WxLoginGe
 	return wxLoginInfoResult, nil
 }
 
-
 //微信app登录
 func (i *WxClient) AppLogin(code string) (*WxLoginInfoResult, error) {
 	res, _ := tools.HttpBeegoPost("https://api.weixin.qq.com/sns/oauth2/access_token", map[string]string{
@@ -234,7 +230,6 @@ func (i *WxClient) AppLogin(code string) (*WxLoginInfoResult, error) {
 	}
 	return wxLoginInfoResult, nil
 }
-
 
 // 微信公众号:code换取token和openId
 func (i *WxClient) GetUserOpenId(code string) (*UserOpenInfo, error) {

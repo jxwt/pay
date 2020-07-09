@@ -32,13 +32,12 @@ type Charge struct {
 	ReUserName  string  `json:"re_user_name,omitempty"`
 	BuyerId     string  `json:"buyerId,omitempty"`
 
+	SceneInfo string `json:"omitempty"` //h5支付使用
 
-	SceneInfo   string  `json:"omitempty"` //h5支付使用
-
-	AppType 	string  // app场景名称
-	AppName 	string  // app名称
-	BundleId 		string  // ios传
-	PackageName string  // android传
+	AppType     string // app场景名称
+	AppName     string // app名称
+	BundleId    string // ios传
+	PackageName string // android传
 }
 
 //PayCallback 支付返回
