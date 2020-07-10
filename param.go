@@ -64,6 +64,7 @@ type PayItem struct {
 	AliPayPrivateKey string
 	AliPayAppId      string
 	AliPayPartnerId  string
+	WxPublicAppId    string
 }
 
 // SendCallBackNotify 回调通知
