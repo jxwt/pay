@@ -145,7 +145,7 @@ type WxMediaUpLoadRequest struct {
 }
 
 // WxMediaUpLoad 微信图片上传
-func (i *WxClient) WxMediaUpLoad(file string, fileName string) error {
+func (i *WxClient) WxMediaUpLoad(file string, fileName string) (string,error) {
 	// 对图片文件进行sha256计算
 	h := sha256.New()
 	h.Write([]byte(file))
@@ -162,14 +162,11 @@ func (i *WxClient) WxMediaUpLoad(file string, fileName string) error {
 	body, err := json.Marshal(req)
 	if err != nil {
 		logs.Warning("WxMediaUpLoad Marshal err", err)
-		return err
+		return "",err
 	}
-	logs.Info("待签名的body", string(body))
 	sign := WxV3Sign("POST", `/v3/merchant/media/upload`, nonceStr, string(body), timestamp, i.KeyPEM)
-	logs.Info("签名后的sign", sign)
 	// 请求构建与发送
 	headerAuthorization := fmt.Sprintf(WxMediaUpLoadHeaderAuthorization, i.AppID, nonceStr, timestamp, i.KeyPemNo, sign)
-	logs.Info("headerAuthorization值为", headerAuthorization)
 
 	reqBody := strings.ReplaceAll(WxMediaUpLoadBody, "#file", fileName)
 	reqBody = strings.ReplaceAll(reqBody, "#sha256", req.Sha256)
@@ -184,17 +181,15 @@ func (i *WxClient) WxMediaUpLoad(file string, fileName string) error {
 	resp, err := client.Do(request)
 	if err != nil {
 		logs.Warning("http Do err", err)
-		return err
+		return "",err
 	}
 	defer resp.Body.Close()
 	resultBody, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		logs.Error(err)
-		return err
+		return "",err
 	}
-	logs.Info(string(resultBody))
-
-	return nil
+	return string(resultBody),nil
 }
 
 // WxV3Sign 微信v3构建签名串
