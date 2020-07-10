@@ -22,7 +22,7 @@ func checkRemote() {
 
 // 注册函数
 func Register(req *RegisterRequest) (*RegisterResponse, error) {
-	checkRemote()
+	//checkRemote()
 	data, _ := json.Marshal(req)
 	resp, err := http.Post(urlPay+":8091"+apiRegister,
 		"application/json",
