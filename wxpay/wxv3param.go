@@ -23,11 +23,11 @@ import (
 type Applyment4subRequest struct {
 	BusinessCode    string                 `json:"business_code,omitempty"`     // 业务申请编号
 	ContactInfo     *ContactInfoStruct     `json:"contact_info,omitempty"`      // 超级管理员信息
-	SubjectInfo     SubjectInfoStruct      `json:"subject_info,omitempty"`      // 主体资料
-	BusinessInfo    BusinessInfoStruct     `json:"business_info,omitempty"`     // 经营资料
-	SettlementInfo  SettlementInfoStruct   `json:"settlement_info,omitempty"`   // 结算规则
+	SubjectInfo     *SubjectInfoStruct     `json:"subject_info,omitempty"`      // 主体资料
+	BusinessInfo    *BusinessInfoStruct    `json:"business_info,omitempty"`     // 经营资料
+	SettlementInfo  *SettlementInfoStruct  `json:"settlement_info,omitempty"`   // 结算规则
 	BankAccountInfo *BankAccountInfoStruct `json:"bank_account_info,omitempty"` // 结算银行账户
-	AdditionInfo    AdditionInfoStruct     `json:"addition_info,omitempty"`     // 补充材料
+	AdditionInfo    *AdditionInfoStruct    `json:"addition_info,omitempty"`     // 补充材料
 }
 
 // ContactInfoStruct 超级管理员信息
@@ -80,33 +80,33 @@ type OrganizationInfoStruct struct {
 
 // IDCardInfoStruct 经营者/法人身份证件
 type IDCardInfoStruct struct {
-	IDCardCopy      string `json:"id_card_copy,omitempty"`      // 身份证人像面照片(图片上传接口)
-	IDCardNational  string `json:"id_card_national,omitempty"`  // 身份证国徽面照片
-	IDCardName      string `json:"id_card_name,omitempty"`      // 身份证姓名
-	IDCardNumber    string `json:"id_card_number,omitempty"`    // 身份证号码
-	CardPeriodBegin string `json:"card_period_begin,omitempty"` // 身份证有效期开始时间
-	CardPeriodEnd   string `json:"card_period_end,omitempty"`   // 身份证有效期结束时间
+	IDCardCopy      string `json:"id_card_copy,omitempty"`              // 身份证人像面照片(图片上传接口)
+	IDCardNational  string `json:"id_card_national,omitempty"`          // 身份证国徽面照片
+	IDCardName      string `json:"id_card_name,omitempty" serial:"1"`   // 身份证姓名
+	IDCardNumber    string `json:"id_card_number,omitempty" serial:"1"` // 身份证号码
+	CardPeriodBegin string `json:"card_period_begin,omitempty"`         // 身份证有效期开始时间
+	CardPeriodEnd   string `json:"card_period_end,omitempty"`           // 身份证有效期结束时间
 }
 
 // IDDocInfoStruct 其他类型证件信息
 type IDDocInfoStruct struct {
-	IDDocCopy      string `json:"id_doc_copy,omitempty"`      // 证件照片
-	IDDocName      string `json:"id_doc_name,omitempty"`      // 证件姓名
-	IDDocNumber    string `json:"id_doc_number,omitempty"`    // 证件号码
-	DocPeriodBegin string `json:"doc_period_begin,omitempty"` // 证件有效期开始时间
-	DocPeriodEnd   string `json:"doc_period_end,omitempty"`   // 证件有效期结束时间
+	IDDocCopy      string `json:"id_doc_copy,omitempty"`              // 证件照片
+	IDDocName      string `json:"id_doc_name,omitempty" serial:"1"`   // 证件姓名
+	IDDocNumber    string `json:"id_doc_number,omitempty" serial:"1"` // 证件号码
+	DocPeriodBegin string `json:"doc_period_begin,omitempty"`         // 证件有效期开始时间
+	DocPeriodEnd   string `json:"doc_period_end,omitempty"`           // 证件有效期结束时间
 }
 
 // UboInfoStruct 最终受益人信息(UBO)
 type UboInfoStruct struct {
-	IDType         string `json:"id_type,omitempty"`          // 证件类型
-	IDCardCopy     string `json:"id_card_copy,omitempty"`     // 身份证人像面照片
-	IDCardNational string `json:"id_card_national,omitempty"` // 身份证国徽面照片
-	IDDocCopy      string `json:"id_doc_copy,omitempty"`      // 证件照片
-	Name           string `json:"name,omitempty"`             // 受益人姓名
-	IDNumber       string `json:"id_number,omitempty"`        // 证件号码
-	IDPeriodBegin  string `json:"id_period_begin,omitempty"`  // 证件有效期开始时间
-	IDPeriodEnd    string `json:"id_period_end,omitempty"`    // 证件有效期结束时间
+	IDType         string `json:"id_type,omitempty"`              // 证件类型
+	IDCardCopy     string `json:"id_card_copy,omitempty"`         // 身份证人像面照片
+	IDCardNational string `json:"id_card_national,omitempty"`     // 身份证国徽面照片
+	IDDocCopy      string `json:"id_doc_copy,omitempty"`          // 证件照片
+	Name           string `json:"name,omitempty" serial:"1"`      // 受益人姓名
+	IDNumber       string `json:"id_number,omitempty" serial:"1"` // 证件号码
+	IDPeriodBegin  string `json:"id_period_begin,omitempty"`      // 证件有效期开始时间
+	IDPeriodEnd    string `json:"id_period_end,omitempty"`        // 证件有效期结束时间
 }
 
 // BizStoreInfoStruct 线下门店场景
@@ -174,39 +174,39 @@ type AdditionInfoStruct struct {
 
 //  SalesInfoStruct 经营场景
 type SalesInfoStruct struct {
-	SalesScenesType []string              `json:"sales_scenes_type,omitempty"` // 经营场景类型 小程序：SALES_SCENES_MINI_PROGRAM 互联网：SALES_SCENES_WEB 公众号：SALES_SCENES_MP APP：SALES_SCENES_APP
-	BizStoreInfo    BizStoreInfoStruct    `json:"biz_store_info,omitempty"`    // 线下门店场景
-	MpInfo          MpInfoStruct          `json:"mp_info,omitempty"`           // 公众号场景
-	MiniProgramInfo MiniProgramInfoStruct `json:"mini_program_info,omitempty"` // 小程序场景
-	AppInfo         AppInfoStruct         `json:"app_info,omitempty"`          // APP场景
-	WebInfo         WebInfoStruct         `json:"web_info,omitempty"`          // 互联网网站场景
-	WeworkInfo      WeworkInfoStruct      `json:"wework_info,omitempty"`       // 企业微信场景
+	SalesScenesType []string               `json:"sales_scenes_type,omitempty"` // 经营场景类型 小程序：SALES_SCENES_MINI_PROGRAM 互联网：SALES_SCENES_WEB 公众号：SALES_SCENES_MP APP：SALES_SCENES_APP
+	BizStoreInfo    *BizStoreInfoStruct    `json:"biz_store_info,omitempty"`    // 线下门店场景
+	MpInfo          *MpInfoStruct          `json:"mp_info,omitempty"`           // 公众号场景
+	MiniProgramInfo *MiniProgramInfoStruct `json:"mini_program_info,omitempty"` // 小程序场景
+	AppInfo         *AppInfoStruct         `json:"app_info,omitempty"`          // APP场景
+	WebInfo         *WebInfoStruct         `json:"web_info,omitempty"`          // 互联网网站场景
+	WeworkInfo      *WeworkInfoStruct      `json:"wework_info,omitempty"`       // 企业微信场景
 }
 
 // BusinessInfoStruct 经营资料
 type BusinessInfoStruct struct {
-	MerchantShortname string          `json:"merchant_shortname,omitempty"` // 商户简称
-	ServicePhone      string          `json:"service_phone,omitempty"`      // 客服电话
-	SalesInfo         SalesInfoStruct `json:"sales_info,omitempty"`         // 经营场景
+	MerchantShortname string           `json:"merchant_shortname,omitempty"` // 商户简称
+	ServicePhone      string           `json:"service_phone,omitempty"`      // 客服电话
+	SalesInfo         *SalesInfoStruct `json:"sales_info,omitempty"`         // 经营场景
 }
 
 // IdentityInfoStruct 经营者/法人身份证件
 type IdentityInfoStruct struct {
-	IDDocType  string           `json:"id_doc_type,omitempty"`  // 证件类型
-	IDCardInfo IDCardInfoStruct `json:"id_card_info,omitempty"` // 经营者/法人身份证件
-	IDDocInfo  IDDocInfoStruct  `json:"id_doc_info,omitempty"`  // 其他类型证件信息
-	Owner      bool             `json:"owner,omitempty"`        // 经营者/法人是否为受益人 true false
+	IDDocType  string            `json:"id_doc_type,omitempty"`  // 证件类型
+	IDCardInfo *IDCardInfoStruct `json:"id_card_info,omitempty"` // 经营者/法人身份证件
+	IDDocInfo  *IDDocInfoStruct  `json:"id_doc_info,omitempty"`  // 其他类型证件信息
+	Owner      bool              `json:"owner,omitempty"`        // 经营者/法人是否为受益人 true false
 }
 
 // SubjectInfoStruct 主体资料
 type SubjectInfoStruct struct {
-	SubjectType           string                    `json:"subject_type,omitempty"`            // SUBJECT_TYPE_INDIVIDUAL（个体户）SUBJECT_TYPE_ENTERPRISE（企业）SUBJECT_TYPE_INSTITUTIONS（党政、机关及事业单位）SUBJECT_TYPE_OTHERS（其他组织）
-	BusinessLicenseInfo   BusinessLicenseInfoStruct `json:"business_license_info,omitempty"`   // 营业执照 主体为个体户/企业 必填
-	CertificateInfo       CertificateInfoStruct     `json:"certificate_info,omitempty"`        // 登记证书 主体为党政、机关及事业单位/其他组织，必填。
-	OrganizationInfo      OrganizationInfoStruct    `json:"organization_info,omitempty"`       // 组织机构代码证	主体为企业/党政、机关及事业单位/其他组织，且证件号码不是18位时必填。
-	CertificateLetterCopy string                    `json:"certificate_letter_copy,omitempty"` // 单位证明函照片
-	IdentityInfo          IdentityInfoStruct        `json:"identity_info,omitempty"`           // 经营者/法人身份证件
-	UboInfo               UboInfoStruct             `json:"ubo_info,omitempty"`                // 最终受益人信息(UBO)
+	SubjectType           string                     `json:"subject_type,omitempty"`            // SUBJECT_TYPE_INDIVIDUAL（个体户）SUBJECT_TYPE_ENTERPRISE（企业）SUBJECT_TYPE_INSTITUTIONS（党政、机关及事业单位）SUBJECT_TYPE_OTHERS（其他组织）
+	BusinessLicenseInfo   *BusinessLicenseInfoStruct `json:"business_license_info,omitempty"`   // 营业执照 主体为个体户/企业 必填
+	CertificateInfo       *CertificateInfoStruct     `json:"certificate_info,omitempty"`        // 登记证书 主体为党政、机关及事业单位/其他组织，必填。
+	OrganizationInfo      *OrganizationInfoStruct    `json:"organization_info,omitempty"`       // 组织机构代码证	主体为企业/党政、机关及事业单位/其他组织，且证件号码不是18位时必填。
+	CertificateLetterCopy string                     `json:"certificate_letter_copy,omitempty"` // 单位证明函照片
+	IdentityInfo          *IdentityInfoStruct        `json:"identity_info,omitempty"`           // 经营者/法人身份证件
+	UboInfo               *UboInfoStruct             `json:"ubo_info,omitempty"`                // 最终受益人信息(UBO)
 }
 
 // WxV3Sign 微信v3构建签名串

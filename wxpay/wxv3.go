@@ -40,6 +40,11 @@ func (i *WxClient) Applyment4sub(req *Applyment4subRequest) error {
 	if req.BankAccountInfo != nil {
 		req.BankAccountInfo = SerialStruct(req.BankAccountInfo, i.CertPEM).(*BankAccountInfoStruct)
 	}
+	if req.SubjectInfo != nil {
+		if req.SubjectInfo.IdentityInfo.IDCardInfo != nil {
+			req.SubjectInfo.IdentityInfo.IDCardInfo = SerialStruct(req.SubjectInfo.IdentityInfo.IDCardInfo, i.CertPEM).(*IDCardInfoStruct)
+		}
+	}
 	//
 	body, err := json.Marshal(req)
 	if err != nil {
