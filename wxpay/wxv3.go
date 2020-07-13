@@ -66,7 +66,7 @@ func (i *WxClient) Applyment4sub(req *Applyment4subRequest) error {
 	nonceStr := tools.GetRandomString(32)
 	now := time.Now().Unix()
 	sign := WxV3Sign("POST", "/v3/applyment4sub/applyment/", nonceStr, string(body), now, i.KeyPEM)
-	headerAuthorization := fmt.Sprintf(WxMediaUpLoadHeaderAuthorization, i.AppID, nonceStr, now, i.KeyPemNo, sign)
+	headerAuthorization := fmt.Sprintf(WxMediaUpLoadHeaderAuthorization, i.MchID, nonceStr, now, i.KeyPemNo, sign)
 
 	client := &http.Client{}
 	request, err := http.NewRequest("POST", WxApplymentURL, bytes.NewBuffer(body))
@@ -166,7 +166,7 @@ func (i *WxClient) WxMediaUpLoad(file string, fileName string) (string,error) {
 	}
 	sign := WxV3Sign("POST", `/v3/merchant/media/upload`, nonceStr, string(body), timestamp, i.KeyPEM)
 	// 请求构建与发送
-	headerAuthorization := fmt.Sprintf(WxMediaUpLoadHeaderAuthorization, i.AppID, nonceStr, timestamp, i.KeyPemNo, sign)
+	headerAuthorization := fmt.Sprintf(WxMediaUpLoadHeaderAuthorization, i.MchID, nonceStr, timestamp, i.KeyPemNo, sign)
 
 	reqBody := strings.ReplaceAll(WxMediaUpLoadBody, "#file", fileName)
 	reqBody = strings.ReplaceAll(reqBody, "#sha256", req.Sha256)
@@ -254,3 +254,5 @@ func SerialStruct(obj interface{}, rasPublic string) interface{} {
 	}
 	return obj
 }
+
+// 
