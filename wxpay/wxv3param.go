@@ -53,7 +53,7 @@ type BankAccountInfoStruct struct {
 // BusinessLicenseInfoStruct 营业执照 主体为个体户/企业 必填
 type BusinessLicenseInfoStruct struct {
 	LicenseCopy   string `json:"license_copy,omitempty"`   // 营业执照照片
-	LicenseNumber string `json:"license_numbe,omitemptyr"` // 注册号/统一社会信用代码
+	LicenseNumber string `json:"license_number,omitempty"` // 注册号/统一社会信用代码
 	MerchantName  string `json:"merchant_name,omitempty"`  // 商户名称
 	LegalPerson   string `json:"legal_person,omitempty"`   // 个体户经营者/法人姓名
 }
