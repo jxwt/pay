@@ -17,8 +17,8 @@ func TestWxClient_WxMediaUpLoad(t *testing.T) {
 		panic(err)
 	}
 	c.KeyPemNo = "339B73BB805706D6FB26DBAE1041C923FC135792"
-	str,_:=c.WxMediaUpLoad(string(buf), "10.png")
-	t.Logf("%v",str)
+	str, _ := c.WxMediaUpLoad(string(buf), "10.png")
+	t.Logf("%v", str)
 }
 
 func TestSerialStruct(t *testing.T) {
