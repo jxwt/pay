@@ -53,10 +53,11 @@ func TestApplyment4sub(t *testing.T) {
 		BusinessCode: "ssss11",
 		ContactInfo:  contactInfo,
 	}
-	err := wxClient.Applyment4sub(req)
+	res, err := wxClient.Applyment4sub(req)
 	if err != nil {
 		t.Logf("%v", err)
 	}
+	t.Logf("%+v", res)
 }
 
 func TestGetCertificates(t *testing.T) {
@@ -67,5 +68,19 @@ func TestGetCertificates(t *testing.T) {
 		KeyPemNo: "339B73BB805706D6FB26DBAE1041C923FC135792",
 	}
 	res, _ := wxClient.GetCertificates()
+	t.Logf("%+v", res)
+}
+
+func TestWxApplymentCheck(t *testing.T) {
+	wxClient := &WxClient{
+		MchID:    "1597398311",
+		CertPEM:  publicKey,
+		KeyPEM:   keyPem,
+		KeyPemNo: "339B73BB805706D6FB26DBAE1041C923FC135792",
+	}
+	res, err := wxClient.WxApplymentCheck("1594621668EAjzDs8D")
+	if err != nil {
+		t.Logf("%v", err)
+	}
 	t.Logf("%+v", res)
 }

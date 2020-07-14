@@ -213,7 +213,7 @@ type SubjectInfoStruct struct {
 
 // Applyment4subResponse 提交申请单返回
 type Applyment4subResponse struct {
-	ApplymentID int `json:"applyment_id"`
+	ApplymentID int    `json:"applyment_id"`
 	Code        string `json:"code"`
 	Message     string `json:"message"`
 }
@@ -383,4 +383,19 @@ func CertificateDecryption(req *GetCertificatesResponse, apiv3key string) (strin
 		publicKey = string(plaintext)
 	}
 	return publicKey, nil
+}
+
+// WxApplymentCheckResponse 微信申请审核查询返回
+type WxApplymentCheckResponse struct {
+	BusinessCode      string `json:"business_code"`
+	ApplymentID       int64  `json:"applyment_id"`
+	SubMchid          string `json:"sub_mchid"`
+	SignURL           string `json:"sign_url"`
+	ApplymentState    string `json:"applyment_state"`
+	ApplymentStateMsg string `json:"applyment_state_msg"`
+	AuditDetail       []struct {
+		Field        string `json:"field"`
+		FieldName    string `json:"field_name"`
+		RejectReason string `json:"reject_reason"`
+	} `json:"audit_detail"`
 }
