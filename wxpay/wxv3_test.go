@@ -39,6 +39,7 @@ func TestApplyment4sub(t *testing.T) {
 		MchID:    "1597398311",
 		CertPEM:  publicKey,
 		KeyPEM:   keyPem,
+		Key:      "Hxf8DV9q21Zi4YYNBpBwpg4Ne1qQqRWN",
 		KeyPemNo: "339B73BB805706D6FB26DBAE1041C923FC135792",
 	}
 	contactInfo := &ContactInfoStruct{
@@ -56,5 +57,15 @@ func TestApplyment4sub(t *testing.T) {
 	if err != nil {
 		t.Logf("%v", err)
 	}
+}
 
+func TestGetCertificates(t *testing.T) {
+	wxClient := &WxClient{
+		MchID:    "1597398311",
+		CertPEM:  publicKey,
+		KeyPEM:   keyPem,
+		KeyPemNo: "339B73BB805706D6FB26DBAE1041C923FC135792",
+	}
+	res, _ := wxClient.GetCertificates()
+	t.Logf("%+v", res)
 }

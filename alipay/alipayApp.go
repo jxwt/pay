@@ -37,7 +37,6 @@ type AliAppClient struct {
 	PublicKey  *rsa.PublicKey
 }
 
-
 func (i *AliAppClient) MakePayMap(method string, charge *Charge, rsaType string) (map[string]string, error) {
 	var m = make(map[string]string)
 	var bizContent = make(map[string]interface{})
@@ -274,8 +273,6 @@ func (i *AliAppClient) SendToAlipay(m map[string]string, method string) (string,
 	body, err := ioutil.ReadAll(resp.Body)
 	return string(body), err
 }
-
-
 
 // 退款查询
 func (i *AliAppClient) QueryRefund(outTradeNo string) (*AliRefundResponse, error) {
@@ -612,7 +609,6 @@ func (i *AliAppClient) MakeTradeCancel(method string, bizContent *AliTradeCancel
 	return m, nil
 }
 
-
 func (i *AliAppClient) MakeH5PayMap(charge *Charge, rsaType string) (string, error) {
 	var m = make(map[string]string)
 	var bizContent = make(map[string]interface{})
@@ -683,7 +679,6 @@ func (i *AliAppClient) MakeH5PayMap(charge *Charge, rsaType string) (string, err
 	</html>`
 	return fmt.Sprintf(formatStr, "https://openapi.alipay.com/gateway.do?charset=utf-8", buf.String()), nil
 }
-
 
 // TradeRelationBind 分账关系绑定
 func (c *AliAppClient) TradeRelationBind(bizContent *TradeRelationBindRequest) (interface{}, error) {

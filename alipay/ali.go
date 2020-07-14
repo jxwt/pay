@@ -117,8 +117,8 @@ func (i *AliClient) CreatePayOrder(charge *Charge) (*TradeCreateResult, error) {
 	if i.Client.PublicKey == nil {
 		return nil, errors.New("publicKey is nil")
 	}
-	charge.PayMethod = pay.ALI_APP //支付方式
-	charge.CallbackURL = i.NotifyURL    //回调地址必须跟下面一样
+	charge.PayMethod = pay.ALI_APP   //支付方式
+	charge.CallbackURL = i.NotifyURL //回调地址必须跟下面一样
 
 	res, err := i.Client.CreateOrder(charge)
 	if err != nil {
@@ -139,8 +139,8 @@ func (i *AliClient) GetAppPayString(charge *Charge) (string, error) {
 	if i.Client.PublicKey == nil {
 		return "", errors.New("publicKey is nil")
 	}
-	charge.PayMethod = pay.ALI_APP //支付方式
-	charge.CallbackURL = i.NotifyURL    //回调地址必须跟下面一样
+	charge.PayMethod = pay.ALI_APP   //支付方式
+	charge.CallbackURL = i.NotifyURL //回调地址必须跟下面一样
 	return i.Client.AppPay(charge)
 }
 
@@ -151,8 +151,8 @@ func (i *AliClient) GetAppWapString(charge *Charge) (string, error) {
 	if i.Client.PublicKey == nil {
 		return "", errors.New("publicKey is nil")
 	}
-	charge.PayMethod = pay.ALI_H5 //支付方式
-	charge.CallbackURL = i.NotifyURL   //回调地址必须跟下面一样
+	charge.PayMethod = pay.ALI_H5    //支付方式
+	charge.CallbackURL = i.NotifyURL //回调地址必须跟下面一样
 	return i.Client.ToH5Pay(charge)
 }
 
@@ -188,7 +188,6 @@ func (i *AliClient) PreCreate(preCreate *Charge) (string, error) {
 		return result.QrCode, nil
 	}
 }
-
 
 //支付宝退款
 func (i *AliClient) Refund(tradeNo string, money float64, tenantId uint, orderId uint, outRequestNo string) (*AliRefundResponse, error) {

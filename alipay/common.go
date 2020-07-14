@@ -47,7 +47,7 @@ type Charge struct {
 	BuyerId     string  `json:"buyerId,omitempty"`
 	SceneType   string  `json:"omitempty"` //h5支付使用
 
-	ExtendParam string
+	ExtendParam        string
 	IndustryRefluxInfo *IndustryRefluxInfo
 }
 
@@ -109,7 +109,6 @@ func TruncatedText(data string, length int) string {
 	}
 	return data
 }
-
 
 //过滤特殊符号
 func FilterTheSpecialSymbol(data string) string {

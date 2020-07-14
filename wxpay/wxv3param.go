@@ -2,6 +2,8 @@ package wxpay
 
 import (
 	"crypto"
+	"crypto/aes"
+	"crypto/cipher"
 	"crypto/rand"
 	"crypto/rsa"
 	"crypto/sha1"
@@ -264,6 +266,7 @@ func SerialStruct(obj interface{}, rasPublic string) interface{} {
 		field := t.Field(i)
 		tag := field.Tag.Get("serial")
 		if tag == "1" {
+			// fmt.Println(rasPublic)
 			msg := v.Field(i).Interface().(string)
 			msg = RSAPublicSign(rasPublic, msg)
 			v.Field(i).Set(reflect.ValueOf(msg))
@@ -323,4 +326,54 @@ func RSAPublicSign(rsaPublicKey string, message string) string {
 	ciphertext := base64.StdEncoding.EncodeToString(cipherdata)
 	//fmt.Printf("Ciphertext: %x\n", ciphertext)
 	return ciphertext
+}
+
+// GetCertificatesResponse .
+type GetCertificatesResponse struct {
+	Data []struct {
+		SerialNo           string `json:"serial_no"`
+		EffectiveTime      string `json:"effective_time "`
+		ExpireTime         string `json:"expire_time "`
+		EncryptCertificate struct {
+			Algorithm      string `json:"algorithm"`
+			Nonce          string `json:"nonce"`
+			AssociatedData string `json:"associated_data"`
+			Ciphertext     string `json:"ciphertext"`
+		} `json:"encrypt_certificate"`
+	} `json:"data"`
+}
+
+// CertificateDecryption 证书解密
+func CertificateDecryption(req *GetCertificatesResponse, apiv3key string) (string, error) {
+	cpinfo := req.Data[0]
+	// 对编码密文进行base64解码
+	decodeBytes, err := base64.StdEncoding.DecodeString(cpinfo.EncryptCertificate.Ciphertext)
+	if err != nil {
+		return "", err
+	}
+
+	c, err := aes.NewCipher([]byte(apiv3key))
+	if err != nil {
+		return "", err
+	}
+
+	gcm, err := cipher.NewGCM(c)
+	if err != nil {
+		return "", err
+	}
+	publicKey := ""
+	if cpinfo.EncryptCertificate.AssociatedData != "" {
+		plaintext, err := gcm.Open(nil, []byte(cpinfo.EncryptCertificate.Nonce), decodeBytes, []byte(cpinfo.EncryptCertificate.AssociatedData))
+		if err != nil {
+			return "", err
+		}
+		publicKey = string(plaintext)
+	} else {
+		plaintext, err := gcm.Open(nil, []byte(cpinfo.EncryptCertificate.Nonce), decodeBytes, nil)
+		if err != nil {
+			return "", err
+		}
+		publicKey = string(plaintext)
+	}
+	return publicKey, nil
 }
