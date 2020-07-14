@@ -211,6 +211,13 @@ type SubjectInfoStruct struct {
 	UboInfo               *UboInfoStruct             `json:"ubo_info,omitempty"`                // 最终受益人信息(UBO)
 }
 
+// Applyment4subResponse 提交申请单返回
+type Applyment4subResponse struct {
+	ApplymentID string `json:"applyment_id"`
+	Code        string `json:"code"`
+	Message     string `json:"message"`
+}
+
 // WxV3Sign 微信v3构建签名串
 func WxV3Sign(method string, uri string, nonceStr string, body string, timestemp int64, privateKey string) string {
 	// 构建签名meta

@@ -83,8 +83,11 @@ func (i *WxClient) Applyment4sub(req *Applyment4subRequest) error {
 		logs.Error(err)
 		return err
 	}
-	logs.Warning(string(resultBody))
-
+	apply4subRes := &Applyment4subResponse{}
+	json.Unmarshal(resultBody, apply4subRes)
+	if apply4subRes.ApplymentID == "" {
+		return errors.New(apply4subRes.Message)
+	}
 	return nil
 }
 
