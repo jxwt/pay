@@ -35,11 +35,11 @@ const WxMediaUpLoadHeaderAuthorization = `WECHATPAY2-SHA256-RSA2048 mchid="%s",n
 const WxMediaUpLoadBody = "--boundary\r\nContent-Disposition:form-data;name=\"meta\";\r\nContent-Type:application/json\r\n\r\n{\"filename\":\"#file\",\"sha256\":\"#sha256\"}\r\n--boundary\r\nContent-Disposition:form-data;name=\"file\";filename=\"#file\";\r\nContent-Type:image/jpg\r\n\r\n#body\r\n--boundary--\r\n"
 
 // Applyment4sub 申请成为特约商户
-func (i *WxClient) Applyment4sub(req *Applyment4subRequest) error {
+func (i *WxClient) Applyment4sub(req *Applyment4subRequest) (*Applyment4subResponse,error) {
 	// 获取证书,证书解析
 	res, _ := i.GetCertificates()
 	if len(res.Data) == 0 {
-		return errors.New("证书获取失败")
+		return nil,errors.New("证书获取失败")
 	}
 	i.SerialNo = res.Data[0].SerialNo
 	i.Ciphertext, _ = CertificateDecryption(res, i.Key)
@@ -58,7 +58,7 @@ func (i *WxClient) Applyment4sub(req *Applyment4subRequest) error {
 	//
 	body, err := json.Marshal(req)
 	if err != nil {
-		return err
+		return nil,err
 	}
 	nonceStr := tools.GetRandomString(32)
 	now := time.Now().Unix()
@@ -75,21 +75,18 @@ func (i *WxClient) Applyment4sub(req *Applyment4subRequest) error {
 	resp, err := client.Do(request)
 	if err != nil {
 		logs.Warning("http Do err", err)
-		return err
+		return nil,err
 	}
 	defer resp.Body.Close()
 	resultBody, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		logs.Error(err)
-		return err
+		return nil,err
 	}
 	apply4subRes := &Applyment4subResponse{}
 	logs.Warning(string(resultBody))
 	json.Unmarshal(resultBody, apply4subRes)
-	if apply4subRes.Message != "" {
-		return errors.New(apply4subRes.Message)
-	}
-	return nil
+	return apply4subRes,nil
 }
 
 // WxMediaUpLoad 微信图片上传

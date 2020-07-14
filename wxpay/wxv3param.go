@@ -213,7 +213,7 @@ type SubjectInfoStruct struct {
 
 // Applyment4subResponse 提交申请单返回
 type Applyment4subResponse struct {
-	ApplymentID string `json:"applyment_id"`
+	ApplymentID int `json:"applyment_id"`
 	Code        string `json:"code"`
 	Message     string `json:"message"`
 }
