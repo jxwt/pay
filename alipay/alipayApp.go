@@ -33,6 +33,7 @@ var DefaultAliAppClient *AliAppClient
 type AliAppClient struct {
 	SellerID   string //合作者ID
 	AppID      string // 应用ID
+
 	PrivateKey *rsa.PrivateKey
 	PublicKey  *rsa.PublicKey
 }
@@ -48,6 +49,9 @@ func (i *AliAppClient) MakePayMap(method string, charge *Charge, rsaType string)
 	m["version"] = "1.0"
 	m["notify_url"] = charge.CallbackURL
 	m["sign_type"] = rsaType
+	if charge.AuthToken != "" {
+		m["app_auth_token"] = charge.AuthToken
+	}
 	bizContent["subject"] = TruncatedText(charge.Describe, 32)
 	bizContent["out_trade_no"] = charge.TradeNum
 	//bizContent["product_code"] = "QUICK_MSECURITY_PAY"
