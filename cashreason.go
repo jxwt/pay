@@ -29,6 +29,9 @@ const (
 	CashReasonMarginRefund        = 20004 // 保证金退款
 )
 
+// CashReasonOuts 出账的最小cashReasonID
+const CashReasonOuts = 10000
+
 // CashReasonRemarks 支付原因描述
 var CashReasonRemarks = map[int]string{
 	CashReasonOrder:                "支付订单",
