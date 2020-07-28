@@ -31,8 +31,8 @@ const (
 var DefaultAliAppClient *AliAppClient
 
 type AliAppClient struct {
-	SellerID   string //合作者ID
-	AppID      string // 应用ID
+	SellerID string //合作者ID
+	AppID    string // 应用ID
 
 	PrivateKey *rsa.PrivateKey
 	PublicKey  *rsa.PublicKey

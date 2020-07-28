@@ -84,3 +84,29 @@ func GetIPAddr() string {
 	}
 	return ""
 }
+
+// 支付函数 .
+func DoOutPay(r *DoOutPayRequest) (interface{}, error) {
+	req, _ := json.Marshal(r)
+	resp, err := http.Post(urlPay+":8091"+apiDoOutPay,
+		"application/json",
+		strings.NewReader(string(req)))
+	if err != nil {
+		return nil, err
+	}
+
+	defer resp.Body.Close()
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+	d := new(CommonResponse)
+	if err = json.Unmarshal(body, d); err != nil {
+		logs.Error(err)
+		return "", err
+	}
+	if d.State == "failed" {
+		return d.Message, errors.New(d.Message)
+	}
+	return d.Data, nil
+}

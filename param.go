@@ -3,6 +3,7 @@ package pay
 const (
 	apiRegister = "/api/service/create" // 注册api
 	apiDoPay    = "/api/pay/doPay"      // 支付api
+	apiDoOutPay = "/api/pay/doOutPay"   // 出账api
 )
 
 // 内部支付域名
@@ -75,4 +76,39 @@ type SendCallBackNotify struct {
 	CashChannelID int     `json:"cashChannelID"` // 支付方式
 	ConfirmAt     string  `json:"confirmAt"`     // 支付完成时间
 	CashReasonID  int     `json:"cashReasonID"`  // 支付原因
+}
+
+// QRCodePayResponse 二维码支付返回
+type QRCodePayResponse struct {
+	CashReasonID uint   `json:"cashReasonID"` // 支付意向ID
+	OrderID      uint   `json:"orderID"`      //订单好
+	QrCodeURL    string `json:"qrCodeURL"`    //二维码链接
+}
+
+// DoOutPayRequest 发起出账请求
+type DoOutPayRequest struct {
+	ServiceID     int          `json:"serviceID"`     // 服务ID
+	Name          string       `json:"name"`          // 服务名称
+	TenantID      int          `json:"tenantID"`      // 商户ID
+	UserID        int          `json:"userID"`        // 系统内的用户ID(可空)
+	ThirdUserID   string       `json:"thirdUserID"`   // 三方用户ID(可空)
+	OrderID       int          `json:"orderID"`       // 订单号 或者 batchID
+	CashReasonID  int          `json:"cashReasonID"`  // 支付原因ID
+	CashChannelID int          `json:"cashChannelID"` // 支付方式ID
+	OutPayLists   []OutPayList `json:"outPayLists"`   // 出账列表
+	CallBackURL   string       `json:"callBackURL"`   // 支付回调地址(内部回调地址)
+}
+
+// OutPayList 出账列表
+type OutPayList struct {
+	PayMoney    float64 `json:"payMoney"`    // 原订单金额
+	TradeNumber string  `json:"tradeNumber"` // 商户单号
+	RefundMoney float64 `json:"refundMoney"` // 需要退款金额
+}
+
+// WxRefundRequest 微信退款请求
+type WxRefundRequest struct {
+	PayMoney    float64
+	TradeNumber string
+	RefundMoney float64
 }
