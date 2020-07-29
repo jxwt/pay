@@ -7,10 +7,12 @@ import (
 	"encoding/xml"
 	"errors"
 	"fmt"
+	"github.com/axgle/mahonia"
 	"github.com/jxwt/pay"
 	"github.com/jxwt/tools"
 	"github.com/shopspring/decimal"
 	"io"
+	"io/ioutil"
 	"sort"
 	"strings"
 	"time"
@@ -167,22 +169,28 @@ func FilterTheSpecialSymbol(data string) string {
 //对微信下订单或者查订单
 func PostWechat(url string, data map[string]string, h *pay.HTTPSClient) (WeChatQueryResult, error) {
 	var xmlRe WeChatQueryResult
-	buf := bytes.NewBufferString("")
 
-	for k, v := range data {
-		buf.WriteString(fmt.Sprintf("<%s><![CDATA[%s]]></%s>", k, v, k))
-	}
-	xmlStr := fmt.Sprintf("<xml>%s</xml>", buf.String())
 	hc := new(pay.HTTPSClient)
+	var re []byte
+	var err error
 	if h != nil {
-		hc = h
+		resp, err := h.Post(url, "application/xml; charset=utf-8", XmlEncode(data))
+		if err != nil {
+			return xmlRe, errors.New("HTTPSC.PostData: " + err.Error())
+		}
+		defer resp.Body.Close()
+		re, err = ioutil.ReadAll(resp.Body)
 	} else {
 		hc = pay.HTTPSC
-	}
-
-	re, err := hc.PostData(url, "text/xml:charset=UTF-8", xmlStr)
-	if err != nil {
-		return xmlRe, errors.New("HTTPSC.PostData: " + err.Error())
+		buf := bytes.NewBufferString("")
+		for k, v := range data {
+			buf.WriteString(fmt.Sprintf("<%s><![CDATA[%s]]></%s>", k, v, k))
+		}
+		xmlStr := fmt.Sprintf("<xml>%s</xml>", buf.String())
+		re, err = hc.PostData(url, "text/xml:charset=UTF-8", xmlStr)
+		if err != nil {
+			return xmlRe, errors.New("HTTPSC.PostData: " + err.Error())
+		}
 	}
 
 	err = xml.Unmarshal(re, &xmlRe)
@@ -200,6 +208,27 @@ func PostWechat(url string, data map[string]string, h *pay.HTTPSClient) (WeChatQ
 		return xmlRe, errors.New("xmlRe.ErrCodeDes: " + xmlRe.ErrCodeDes)
 	}
 	return xmlRe, nil
+}
+
+func XmlEncode(params map[string]string) io.Reader {
+	var buf bytes.Buffer
+	decoder := mahonia.NewDecoder("utf-8")
+	if decoder == nil {
+		fmt.Println("编码不存在!")
+	}
+	buf.WriteString(`<xml>`)
+	for k, v := range params {
+		buf.WriteString(`<`)
+		buf.WriteString(k)
+		buf.WriteString(`>`)
+		buf.WriteString(v)
+		buf.WriteString(`</`)
+		buf.WriteString(k)
+		buf.WriteString(`>`)
+	}
+	buf.WriteString(`</xml>`)
+	fmt.Println(buf.String())
+	return &buf
 }
 
 // 微信金额浮点转字符串

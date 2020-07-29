@@ -85,7 +85,7 @@ func (i *WxClient) H5Pay(charge *Charge) (map[string]string, error) {
 	}
 	c["paySign"] = sign2
 	c["mweb_url"] = result.MwebUrl
-	delete(c, "appId")
+	//delete(c, "appId")
 	return c, nil
 }
 
