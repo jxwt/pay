@@ -2,10 +2,12 @@ package wxpay
 
 import (
 	"bytes"
+	"crypto/tls"
 	"errors"
 	"github.com/jxwt/pay"
 	"github.com/jxwt/tools"
 	"log"
+	"net/http"
 	"strings"
 )
 
@@ -13,7 +15,28 @@ import (
 func (i *WxClient) WithCert(certFile, keyFile string) error {
 	certByte := FormatCeritficate(certFile)
 	keyByte := FormatPrivateKey(keyFile)
-	i.httpsClient = pay.NewHTTPSClient(certByte, keyByte)
+	i.WithCertBytes(certByte, keyByte)
+	return nil
+}
+
+func (i *WxClient) WithCertBytes(cert, key []byte) error {
+	tlsCert, err := tls.X509KeyPair(cert, key)
+	if err != nil {
+		return err
+	}
+	conf := &tls.Config{
+		Certificates: []tls.Certificate{tlsCert},
+	}
+	trans := &http.Transport{
+		TLSClientConfig: conf,
+	}
+
+	httpsClient := http.Client{
+		Transport: trans,
+	}
+	i.httpsClient = &pay.HTTPSClient{
+		httpsClient,
+	}
 	return nil
 }
 
