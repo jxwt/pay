@@ -13,6 +13,7 @@ import (
 	"fmt"
 	"github.com/astaxie/beego/httplib"
 	"github.com/astaxie/beego/logs"
+	"github.com/axgle/mahonia"
 	"golang.org/x/text/encoding/simplifiedchinese"
 	"golang.org/x/text/transform"
 	"io/ioutil"
@@ -60,7 +61,9 @@ func (i *AliWapClient) MakePayMap(method string, charge *Charge, rsaType string)
 	m["notify_url"] = charge.CallbackURL
 	m["sign_type"] = "RSA2"
 	// bizContent["subject"] = TruncatedText(charge.Describe, 32)
-	bizContent["subject"] = "aaa"
+	//bizContent["quit_url"]="www.baidu.com"
+
+	bizContent["subject"] = "pay"
 	bizContent["out_trade_no"] = charge.TradeNum
 	//bizContent["quit_url"] = ""
 	bizContent["product_code"] = "QUICK_WAP_WAY"
@@ -85,7 +88,7 @@ func (i *AliWapClient) MakePayMap(method string, charge *Charge, rsaType string)
 
 func (i *AliWapClient) MakeH5PayMap(method string, charge *Charge, rsaType string) (string, error) {
 	var m = make(map[string]string)
-	var bizContent = make(map[string]string)
+	var bizContent = make(map[string]interface{})
 	m["app_id"] = i.AppID
 	m["method"] = "alipay.trade.wap.pay"
 	m["format"] = "JSON"
@@ -94,14 +97,25 @@ func (i *AliWapClient) MakeH5PayMap(method string, charge *Charge, rsaType strin
 	m["version"] = "1.0"
 	m["notify_url"] = charge.CallbackURL
 	m["sign_type"] = "RSA2"
-	// bizContent["subject"] = TruncatedText(charge.Describe, 32)
-	bizContent["subject"] = "test"
+	if charge.AuthToken != "" {
+		m["app_auth_token"] = charge.AuthToken
+	}
+	bizContent["subject"] = TruncatedText(charge.Describe, 32)
 	bizContent["out_trade_no"] = charge.TradeNum
 	//bizContent["quit_url"] = ""
 	bizContent["product_code"] = "QUICK_WAP_WAY"
 	bizContent["total_amount"] = AliyunMoneyFeeToString(charge.MoneyFee)
 	if charge.BuyerId != "" {
 		bizContent["buyer_id"] = charge.BuyerId
+	}
+	if charge.ExtendParam != "" {
+		p := new(ExtendParam)
+
+		err := json.Unmarshal([]byte(charge.ExtendParam), p)
+		if err != nil {
+			return "", errors.New("ali pay extend param error")
+		}
+		bizContent["extend_params"] = p
 	}
 	bizContentJson, err := json.Marshal(bizContent)
 	if err != nil {
@@ -168,7 +182,19 @@ func (i *AliWapClient) SendToAlipay(m map[string]string, method string) (string,
 		println(err.Error())
 	}
 	body, err := ioutil.ReadAll(resp.Body)
+	a:=ConvertToString(string(body),"gbk", "utf-8")
+	fmt.Println(a)
 	return string(body), err
+}
+
+
+func ConvertToString(src string, srcCode string, tagCode string) string {
+	srcCoder := mahonia.NewDecoder(srcCode)
+	srcResult := srcCoder.ConvertString(src)
+	tagCoder := mahonia.NewDecoder(tagCode)
+	_, cdata, _ := tagCoder.Translate([]byte(srcResult), true)
+	result := string(cdata)
+	return result
 }
 
 // GenSign 产生签名
