@@ -108,7 +108,10 @@ func (i *WxClient) GetOpenSession(jsCode string) *WxSession {
 		"grant_type": "authorization_code",
 	}, nil)
 	var wxSession WxSession
-	json.Unmarshal(body, &wxSession)
+	if err:=json.Unmarshal(body, &wxSession);err!=nil{
+		logs.Warning("GetOpenSession err",err)
+		logs.Warning("body value : ",string(body))
+	}
 	return &wxSession
 }
 
@@ -217,6 +220,7 @@ func (i *WxClient) AppLogin(code string) (*WxLoginInfoResult, error) {
 	wxAppLoginAccessResult := new(WxAppLoginAccessResult)
 	err := json.Unmarshal(res, wxAppLoginAccessResult)
 	if err != nil {
+		logs.Warning("body value : ",string(res))
 		return nil, err
 	}
 	res, _ = tools.HttpBeegoPost("https://api.weixin.qq.com/sns/userinfo", map[string]string{
