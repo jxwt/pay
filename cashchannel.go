@@ -18,6 +18,7 @@ const (
 	CashChannelDepositPay = 50 // 钱包支付
 	CashChannelCash       = 51 // 现金支付
 	CashChannelPackHour   = 52 // 包时长
+	CashChannelCoupon   = 53 // 优惠券
 )
 
 // CashChannelRemarks 支付途径描述
@@ -34,6 +35,7 @@ var CashChannelRemarks = map[int]string{
 	CashChannelAliMiniPay:  "支付宝小程序",
 	CashChannelCash:        "现金支付",
 	CashChannelPackHour:    "包时长",
+	CashChannelCoupon:    "优惠券",
 }
 
 // GetChannelName 获取channel备注
