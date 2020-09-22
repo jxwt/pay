@@ -137,7 +137,8 @@ func (i *WxClient) DecryptWXOpenData(sessionKey, encryptData, iv string) (WxLogi
 	}
 	dataBytes, err := i.AesDecrypt(decodeBytes, sessionKeyBytes, ivBytes)
 
-	err = json.Unmarshal(dataBytes, &wxLoginInfoResult)
+	d := tools.UnicodeEmojiCode(string(dataBytes))
+	err = json.Unmarshal([]byte(d), &wxLoginInfoResult)
 	logs.Warning(wxLoginInfoResult, err)
 	if wxLoginInfoResult.Watermark.Appid != i.AppID {
 		return wxLoginInfoResult, fmt.Errorf("invalid appid, get !%s!", wxLoginInfoResult.Watermark.Appid)
