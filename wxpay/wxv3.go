@@ -42,7 +42,7 @@ func (i *WxClient) Applyment4sub(req *Applyment4subRequest) (*Applyment4subRespo
 		return nil, errors.New("证书获取失败")
 	}
 	i.SerialNo = res.Data[0].SerialNo
-	i.Ciphertext, _ = CertificateDecryption(res, i.Key)
+	i.Ciphertext, _ = CertificateDecryption(res, i.SecretKey)
 	// 对结构体内的敏感信息进行加密
 	if req.ContactInfo != nil {
 		req.ContactInfo = SerialStruct(req.ContactInfo, i.Ciphertext).(*ContactInfoStruct)

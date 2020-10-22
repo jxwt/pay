@@ -1,6 +1,9 @@
 package wxpay
 
-import "testing"
+import (
+	"fmt"
+	"testing"
+)
 
 func TestH5Pay(t *testing.T) {
 	// 停车
@@ -25,8 +28,21 @@ func TestH5Pay(t *testing.T) {
 func TestWxClient_MiniLogin(t *testing.T) {
 	c := &WxClient{
 		AppID: "wx0a8581e498061282",
-		Key:   "69715695cd4c32a14d0328db206882f3",
+		Key:   "c45646ffea88cf98e4285dbf75893ff5",
 	}
+	//c.AppID  = "wx3474908ee1c58dea"
+	//c.Key = "49bec205b4aeb983c1193096f80cd9f6"
 
-	c.GetLoginInfo("9QSjCYMXJUvvkD5tC5LN/g==", "EEaeNQWaj4wAHzTeFl5dn8ZN60KLJhlKoHGeKjm4XZoJn0Xdv+OK+5k09dbapONPmQn+7lAwkpMSItsTkzwMHwq8Yuhg5eaUUzz+dBC9Y7ulyi5vwi1ev/c1UlAakJzIcd6BuAOJH0Op7EdMEtpqmCPSJcReUSjpg/dgXm7aBTkeQZyUM+Qbtk6D/Y88XBixkB+HkKLnNRbpUHs3Bwj8vtP5qJtFpk0qGViKN04oCaj5uW2UeYXqSa14nvpkeq+zljguap7F50x98v3rg+sfP4RTUPO41EuBCEWFqBnELmNx6nQIQs3Zb9qefkAM4LgVZjHWB3ABUeUM6mXT81ZHp0ThB30XWX3kUPGzaea4sUoRBigXbgXsP/li67fLdC9emxgsLa0LDZd++ILKPQJETVLdZsAhbq3W4a/v9svymZhitorJfYZJ4h1h7DZI9YGhTPstl/NxJPg63lhYJAT5qqhVA3eZ9Ye0F9GUH1gddpG0upk1nNGuh00Yut+MNIFBu8ErzcVro6r3Fn6EyHGGkQ==", "011bot100Y1lwK1cUk3000mAs30bot1u")
+	session := c.GetOpenSession("081CXKkl2deaQ54SZell2niID84CXKkM")
+	fmt.Println(session.SessionKey)
+
+	key := "pl3rOB+eRTIKmYYGg3at2Q=="
+	iv := "KzevCXXfxsgygyh7EHwVuQ=="
+	data := "y4guz/vPWpCu9tOEBGRMvmS6U4LKnVJ7zd12P7kJKydBocSgl28GkqltcBENJLbbcq7CuM0zXqn7vIIK2ZhU0NvhIcJ/BSg3Ry0M0PzlWyqbhUGXndKEQgU8ERRLN7oF3lZfw/WnPqBY4HFNrvDGMtCf0kQNbkpLbuxwn88Cpb5BAA2Rhbq9rnhEB8c0Hd/aIw5SxfTpE+kCp4IY5HsCQ9AufqB55U+nl9IK7MJtv0h3pxZvUQiw4wIgoQI9VNP71RSZLMUwQrVecGnLUXKf3tqT2VrgLapZdG0/BTn07oLeQ8ra1STdrnQQcbmyV4g+ALCTiY9Ezfqaea5swrgCQNHeGnzgOjxQp5BFsfynsGQT/x9XI0Pm/5iFenvJTxAjSWlh1mTc+zI3grCMe5osL+w12xzpzwZ3do/OeKHhRcHQmTWNP+x0aOa9dzLlD3N7qkb1bdkc4Ua464ptkgEFY2hfjlnn3ryT1/QQdHl9QKo45pxGydwqhpFd0iVzyq29khiBredWK/HhYnqTIdxWTA=="
+	c.DecryptWXOpenData(key, data, iv)
+
+	c.AppID  = "wx0a8581e498061282"
+	c.Key = "c45646ffea88cf98e4285dbf75893ff5"
+
+	c.DecryptWXOpenData(key, data, iv)
 }

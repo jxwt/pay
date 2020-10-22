@@ -49,12 +49,12 @@ func WeChatAppCallback(w http.ResponseWriter, r *http.Request, callback func(str
 			continue
 		}
 		if k == "out_trade_no" {
-			wxClient.Key = callback(v)
+			wxClient.PayKey = callback(v)
 		}
 		signData = append(signData, fmt.Sprintf("%v=%v", k, v))
 	}
 
-	mySign, err := WechatGenSign(wxClient.Key, m)
+	mySign, err := WechatGenSign(wxClient.PayKey, m)
 	if err != nil {
 		return &reXML, err
 	}

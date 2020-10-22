@@ -14,8 +14,8 @@ import (
 type WxClient struct {
 	AppID       string
 	MchID       string
-	Key         string
-	PrivateKey  []byte
+	SecretKey   string  // 登录秘钥
+	PayKey  	string 	// 支付加签秘钥
 	CallbackURL string
 	SubMchId    string
 
@@ -29,12 +29,12 @@ type WxClient struct {
 	SerialNo   string // 敏感信息加密使用的证书号
 }
 
-func InitWxClient(AppID string, MchID string, Key string, PrivateKey string, CallbackURL string, subMchId ...string) *WxClient {
+func InitWxClient(AppID string, MchID string, SecretKey string, PayKey string, CallbackURL string, subMchId ...string) *WxClient {
 	c := &WxClient{
 		AppID:       AppID,
 		MchID:       MchID,
-		Key:         Key,
-		PrivateKey:  []byte(PrivateKey),
+		SecretKey:         PayKey,
+		PayKey:  PayKey,
 		CallbackURL: CallbackURL,
 		httpsClient: nil,
 	}
@@ -59,7 +59,7 @@ func (i *WxClient) AppPay(charge *Charge) (map[string]string, error) {
 	c["noncestr"] = RandomStr()
 	c["timestamp"] = fmt.Sprintf("%d", time.Now().Unix())
 	//c["sign_type"] = "MD5"
-	sign2, err := WechatGenSign(i.Key, c)
+	sign2, err := WechatGenSign(i.PayKey, c)
 	if err != nil {
 		return map[string]string{}, errors.New("wx app pay" + err.Error())
 	}
@@ -79,7 +79,7 @@ func (i *WxClient) H5Pay(charge *Charge) (map[string]string, error) {
 	c["nonceStr"] = RandomStr()
 	c["package"] = fmt.Sprintf("prepay_id=%s", result.PrepayID)
 	c["signType"] = "MD5"
-	sign2, err := WechatGenSign(i.Key, c)
+	sign2, err := WechatGenSign(i.PayKey, c)
 	if err != nil {
 		return map[string]string{}, errors.New("WechatH5: " + err.Error())
 	}
@@ -101,7 +101,7 @@ func (i *WxClient) MiniPay(charge *Charge) (map[string]string, error) {
 	c["nonceStr"] = RandomStr()
 	c["package"] = fmt.Sprintf("prepay_id=%s", result.PrepayID)
 	c["signType"] = "MD5"
-	sign2, err := WechatGenSign(i.Key, c)
+	sign2, err := WechatGenSign(i.PayKey, c)
 	if err != nil {
 		return map[string]string{}, errors.New("WechatWeb: " + err.Error())
 	}
@@ -147,7 +147,7 @@ func (i *WxClient) WxUnifiedOrder(charge *Charge, tradeType string) (WeChatQuery
 	} else if charge.PackageName != "" {
 		m["scene_info"] = fmt.Sprintf(`{"h5_info": {"type":"%s","app_name": "%s","package_name": "%s"}`, charge.AppType, charge.AppType, charge.PackageName)
 	}
-	sign, err := WechatGenSign(i.Key, m)
+	sign, err := WechatGenSign(i.PayKey, m)
 	if err != nil {
 		return *result, errors.New("WechatApp.sign: " + err.Error())
 	}
@@ -167,7 +167,7 @@ func (i *WxClient) QueryOrder(tradeNum string) (WeChatQueryResult, error) {
 	m["out_trade_no"] = tradeNum
 	m["nonce_str"] = RandomStr()
 
-	sign, err := WechatGenSign(i.Key, m)
+	sign, err := WechatGenSign(i.PayKey, m)
 	if err != nil {
 		return WeChatQueryResult{}, err
 	}
@@ -192,7 +192,7 @@ func (i *WxClient) MicroPay(req *MicroPayRequest) (*WeChatQueryResult, error) {
 	m["spbill_create_ip"] = tools.GetLocalAddr()
 	m["auth_code"] = req.AuthCode
 
-	sign, err := WechatGenSign(i.Key, m)
+	sign, err := WechatGenSign(i.PayKey, m)
 	if err != nil {
 		return nil, errors.New("MicroPay.sign: " + err.Error())
 	}

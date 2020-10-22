@@ -57,8 +57,8 @@ type PayItem struct {
 	WxAppId          string
 	WxMchId          string
 	WxSubMchId       string
-	WxKey            string
-	WxPrivateKey     string
+	WxSecretKey      string
+	WxPayKey     	 string
 	WxCertPEM        string
 	WxKeyPEM         string
 	AliPayPublicKey  string

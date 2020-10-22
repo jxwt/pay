@@ -84,7 +84,7 @@ type WxLoginGetPhone struct {
 */
 func (i *WxClient) MiniLogin(code string) (wxInfo RespWXSmall, err error) {
 	url := "https://api.weixin.qq.com/sns/jscode2session?appid=%s&secret=%s&js_code=%s&grant_type=authorization_code"
-	resp, err := http.Get(fmt.Sprintf(url, i.AppID, i.Key, code))
+	resp, err := http.Get(fmt.Sprintf(url, i.AppID, i.SecretKey, code))
 	if err != nil {
 		return wxInfo, err
 	}
@@ -103,7 +103,7 @@ func (i *WxClient) MiniLogin(code string) (wxInfo RespWXSmall, err error) {
 func (i *WxClient) GetOpenSession(jsCode string) *WxSession {
 	body, _ := tools.HttpBeegoPost("https://api.weixin.qq.com/sns/jscode2session", map[string]string{
 		"appid":      i.AppID,
-		"secret":     i.Key,
+		"secret":     i.SecretKey,
 		"js_code":    jsCode,
 		"grant_type": "authorization_code",
 	}, nil)
@@ -213,7 +213,7 @@ func (i *WxClient) DecryptWXPhone(sessionKey, encryptData, iv string) (WxLoginGe
 func (i *WxClient) AppLogin(code string) (*WxLoginInfoResult, error) {
 	res, _ := tools.HttpBeegoPost("https://api.weixin.qq.com/sns/oauth2/access_token", map[string]string{
 		"appid":      i.AppID,
-		"secret":     i.Key,
+		"secret":     i.SecretKey,
 		"code":       code,
 		"grant_type": "authorization_code",
 	}, nil)
@@ -239,7 +239,7 @@ func (i *WxClient) AppLogin(code string) (*WxLoginInfoResult, error) {
 func (i *WxClient) GetUserOpenId(code string) (*UserOpenInfo, error) {
 	url := "https://api.weixin.qq.com/sns/oauth2/access_token?"
 	url += "appid=" + i.AppID
-	url += "&secret=" + i.Key
+	url += "&secret=" + i.SecretKey
 	url += "&code=" + code
 	url += "&grant_type=authorization_code"
 
@@ -284,7 +284,7 @@ func (i *WxClient) GetAccessToken() (string, error) {
 		ErrCode     int    `json:"errcode"`
 		ErrMsg      string `json:"errmsg"`
 	}
-	url := "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential" + "&appid=" + i.AppID + "&secret=" + i.Key
+	url := "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential" + "&appid=" + i.AppID + "&secret=" + i.SecretKey
 	body, err := tools.HttpBeegoGet(url, nil)
 	err = json.Unmarshal(body, &resp)
 	if err != nil {

@@ -62,7 +62,7 @@ func (i *WxClient) PayRefund(payRefundReq *PayRefundRequest) (*WeChatQueryResult
 	m["total_fee"] = WechatMoneyFeeToString(payRefundReq.TotalFee)
 	m["refund_fee"] = WechatMoneyFeeToString(payRefundReq.RefundFee)
 	m["refund_desc"] = payRefundReq.RefundDesc
-	sign, err := WechatGenSign(i.Key, m)
+	sign, err := WechatGenSign(i.PayKey, m)
 	if err != nil {
 		return nil, errors.New("wx refund sign err " + err.Error())
 	}
@@ -88,7 +88,7 @@ func (i *WxClient) PayReverse(tradeNum string) (*WeChatQueryResult, error) {
 	m["mch_id"] = i.MchID
 	m["nonce_str"] = RandomStr()
 	m["out_trade_no"] = tradeNum
-	sign, err := WechatGenSign(i.Key, m)
+	sign, err := WechatGenSign(i.PayKey, m)
 	if err != nil {
 		return nil, errors.New("wx refund sign err " + err.Error())
 	}
@@ -162,7 +162,7 @@ func (i *WxClient) Transfer(payRefundReq *PayRefundRequest) error {
 	m["check_name"] = "NO_CHECK"
 	m["desc"] = payRefundReq.RefundDesc
 	m["spbill_create_ip"] = tools.GetLocalAddr()
-	sign, err := WechatGenSign(i.Key, m)
+	sign, err := WechatGenSign(i.PayKey, m)
 	if err != nil {
 		return errors.New("wx refund sign err " + err.Error())
 	}
