@@ -103,7 +103,7 @@ func (i *WxClient) MiniLogin(code string) (wxInfo RespWXSmall, err error) {
 func (i *WxClient) GetOpenSession(jsCode string) *WxSession {
 	body, _ := tools.HttpBeegoPost("https://api.weixin.qq.com/sns/jscode2session", map[string]string{
 		"appid":      i.AppID,
-		"secret":     string(i.PrivateKey),
+		"secret":     i.Key,
 		"js_code":    jsCode,
 		"grant_type": "authorization_code",
 	}, nil)
