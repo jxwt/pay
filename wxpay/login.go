@@ -103,12 +103,15 @@ func (i *WxClient) MiniLogin(code string) (wxInfo RespWXSmall, err error) {
 func (i *WxClient) GetOpenSession(jsCode string) *WxSession {
 	body, _ := tools.HttpBeegoPost("https://api.weixin.qq.com/sns/jscode2session", map[string]string{
 		"appid":      i.AppID,
-		"secret":     string(i.PrivateKey),
+		"secret":     i.Key,
 		"js_code":    jsCode,
 		"grant_type": "authorization_code",
 	}, nil)
 	var wxSession WxSession
-	json.Unmarshal(body, &wxSession)
+	if err:=json.Unmarshal(body, &wxSession);err!=nil{
+		logs.Warning("GetOpenSession err",err)
+		logs.Warning("body value : ",string(body))
+	}
 	return &wxSession
 }
 
@@ -217,6 +220,7 @@ func (i *WxClient) AppLogin(code string) (*WxLoginInfoResult, error) {
 	wxAppLoginAccessResult := new(WxAppLoginAccessResult)
 	err := json.Unmarshal(res, wxAppLoginAccessResult)
 	if err != nil {
+		logs.Warning("body value : ",string(res))
 		return nil, err
 	}
 	res, _ = tools.HttpBeegoPost("https://api.weixin.qq.com/sns/userinfo", map[string]string{
