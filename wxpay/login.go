@@ -136,7 +136,7 @@ func (i *WxClient) DecryptWXOpenData(sessionKey, encryptData, iv string) (WxLogi
 		return wxLoginInfoResult, err
 	}
 	dataBytes, err := i.AesDecrypt(decodeBytes, sessionKeyBytes, ivBytes)
-	
+
 	err = json.Unmarshal(dataBytes, &wxLoginInfoResult)
 	logs.Warning(wxLoginInfoResult, err)
 	if wxLoginInfoResult.Watermark.Appid != i.AppID {
