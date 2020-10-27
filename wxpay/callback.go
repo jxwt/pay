@@ -5,11 +5,10 @@ import (
 	"errors"
 	"fmt"
 	"github.com/astaxie/beego/logs"
-	"io/ioutil"
 	"net/http"
 )
 
-func WeChatAppCallback(w http.ResponseWriter, r *http.Request, callback func(string) string) (*WeChatPayResult, error) {
+func WeChatAppCallback(w http.ResponseWriter,body []byte, callback func(string) string) (*WeChatPayResult, error) {
 	var returnCode = "FAIL"
 	var returnMsg = ""
 	defer func() {
@@ -19,24 +18,15 @@ func WeChatAppCallback(w http.ResponseWriter, r *http.Request, callback func(str
 		w.Write([]byte(returnBody))
 	}()
 	var reXML WeChatPayResult
-	//body := cb.Ctx.Input.RequestBody
-	body, err := ioutil.ReadAll(r.Body)
+	err := xml.Unmarshal(body, &reXML)
 	if err != nil {
-		//log.Error(string(body))
-		returnCode = "FAIL"
-		returnMsg = "Bodyerror"
-		logs.Error(err)
-	}
-	err = xml.Unmarshal(body, &reXML)
-	if err != nil {
-		//log.Error(err, string(body))
+		logs.Warning(err)
 		returnMsg = "参数错误"
 		returnCode = "FAIL"
-		logs.Error(err)
 	}
 
 	if reXML.ReturnCode != "SUCCESS" {
-		//log.Error(reXML)
+		logs.Error(reXML)
 		returnCode = "FAIL"
 		return &reXML, errors.New(reXML.ReturnCode)
 	}

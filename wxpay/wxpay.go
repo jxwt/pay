@@ -33,8 +33,8 @@ func InitWxClient(AppID string, MchID string, SecretKey string, PayKey string, C
 	c := &WxClient{
 		AppID:       AppID,
 		MchID:       MchID,
-		SecretKey:         PayKey,
-		PayKey:  PayKey,
+		SecretKey:   SecretKey,
+		PayKey:  	PayKey,
 		CallbackURL: CallbackURL,
 		httpsClient: nil,
 	}
