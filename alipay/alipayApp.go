@@ -210,7 +210,7 @@ func (i *AliAppClient) CreateOrder(charge *Charge) (string, error) {
 func (i *AliAppClient) Login(code string) (string, error) {
 	var m = make(map[string]string)
 	m["app_id"] = i.AppID
-	m["method"] = "alipay.systemsService.oauth.token"
+	m["method"] = "alipay.system.oauth.token"
 	m["format"] = "JSON"
 	m["charset"] = "utf-8"
 	m["timestamp"] = time.Now().Format("2006-01-02 15:04:05")
