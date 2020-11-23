@@ -44,6 +44,9 @@ func Register(req *RegisterRequest) (*RegisterResponse, error) {
 
 // 支付函数 .
 func DoPay(r *DoPayRequest) (interface{}, error) {
+	if r.Money < 0.01 {
+		return "支付金额不能小于0.01", errors.New("支付金额不能小于0.01")
+	}
 	req, _ := json.Marshal(r)
 	resp, err := http.Post(urlPay+":8091"+apiDoPay,
 		"application/json",
