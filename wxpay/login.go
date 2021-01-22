@@ -108,9 +108,9 @@ func (i *WxClient) GetOpenSession(jsCode string) *WxSession {
 		"grant_type": "authorization_code",
 	}, nil)
 	var wxSession WxSession
-	if err:=json.Unmarshal(body, &wxSession);err!=nil{
-		logs.Warning("GetOpenSession err",err)
-		logs.Warning("body value : ",string(body))
+	if err := json.Unmarshal(body, &wxSession); err != nil {
+		logs.Warning("GetOpenSession err", err)
+		logs.Warning("body value : ", string(body))
 	}
 	return &wxSession
 }
@@ -120,6 +120,13 @@ func (i *WxClient) GetLoginInfo(iv string, encryptData string, code string) (WxL
 	if session.SessionKey == "" {
 		var wxLoginInfoResult WxLoginInfoResult
 		return wxLoginInfoResult, errors.New("session获取不到")
+	}
+	// 若只传code 则为静默授权,不解用户信息
+	if encryptData == "" && iv == "" {
+		var wxLoginInfoResult WxLoginInfoResult
+		wxLoginInfoResult.OpenID = session.Openid
+		wxLoginInfoResult.UnionID = session.Unionid
+		return wxLoginInfoResult, nil
 	}
 	return i.DecryptWXOpenData(session.SessionKey, encryptData, iv)
 }
@@ -220,7 +227,7 @@ func (i *WxClient) AppLogin(code string) (*WxLoginInfoResult, error) {
 	wxAppLoginAccessResult := new(WxAppLoginAccessResult)
 	err := json.Unmarshal(res, wxAppLoginAccessResult)
 	if err != nil {
-		logs.Warning("body value : ",string(res))
+		logs.Warning("body value : ", string(res))
 		return nil, err
 	}
 	res, _ = tools.HttpBeegoPost("https://api.weixin.qq.com/sns/userinfo", map[string]string{
