@@ -7,6 +7,7 @@ import (
 	"encoding/xml"
 	"errors"
 	"fmt"
+	"github.com/astaxie/beego/logs"
 	"github.com/axgle/mahonia"
 	"github.com/jxwt/pay"
 	"github.com/jxwt/tools"
@@ -187,6 +188,7 @@ func PostWechat(url string, data map[string]string, h *pay.HTTPSClient) (WeChatQ
 			buf.WriteString(fmt.Sprintf("<%s><![CDATA[%s]]></%s>", k, v, k))
 		}
 		xmlStr := fmt.Sprintf("<xml>%s</xml>", buf.String())
+		logs.Warning(xmlStr)
 		re, err = hc.PostData(url, "text/xml:charset=UTF-8", xmlStr)
 		if err != nil {
 			return xmlRe, errors.New("HTTPSC.PostData: " + err.Error())
