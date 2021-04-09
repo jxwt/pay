@@ -99,7 +99,11 @@ func (i *WxClient) MiniPay(charge *Charge) (map[string]string, error) {
 		return map[string]string{}, errors.New("wx app pay" + err.Error())
 	}
 	var c = make(map[string]string)
-	c["appId"] = i.AppID
+	if i.SubAppId != "" {
+		c["appId"] = i.SubAppId
+	} else {
+		c["appId"] = i.AppID
+	}
 	c["timeStamp"] = fmt.Sprintf("%d", time.Now().Unix())
 	c["nonceStr"] = RandomStr()
 	c["package"] = fmt.Sprintf("prepay_id=%s", result.PrepayID)
