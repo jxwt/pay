@@ -142,7 +142,11 @@ func (i *WxClient) WxUnifiedOrder(charge *Charge, tradeType string) (WeChatQuery
 		m["sub_appid"] = i.SubAppId
 	}
 	if charge.OpenID != "" {
-		m["openid"] = charge.OpenID
+		if i.SubAppId != "" {
+			m["sub_openid"] = charge.OpenID
+		} else {
+			m["openid"] = charge.OpenID
+		}
 	}
 	if tradeType == "NWEB" {
 		m["scene_info"] = charge.SceneInfo
