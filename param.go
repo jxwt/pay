@@ -58,7 +58,7 @@ type PayItem struct {
 	WxMchId          string
 	WxSubMchId       string
 	WxSecretKey      string
-	WxPayKey     	 string
+	WxPayKey         string
 	WxCertPEM        string
 	WxKeyPEM         string
 	AliPayPublicKey  string
@@ -66,6 +66,7 @@ type PayItem struct {
 	AliPayAppId      string
 	AliPayPartnerId  string
 	WxPublicAppId    string
+	WxSubAppId       string
 }
 
 // SendCallBackNotify 回调通知
