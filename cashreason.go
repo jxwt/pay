@@ -18,6 +18,9 @@ const (
 	CashReasonNotPay               = 109 // 支付欠款订单
 	CashReasonPrePay               = 110 // 预支付订单
 
+	// 门票订单
+	CashReasonTicket = 120 // 门票订单支付
+
 	// 通用出账原因
 	CashReasonOrderRefund = 10001 // 退款
 	CashReasonCashOut     = 10002 // 提现,转账
@@ -52,6 +55,7 @@ var CashReasonRemarks = map[int]string{
 	CashReasonBillPackPlateRefund:  "包车牌退款",
 	CashReasonBillPackSpotRefund:   "包车位退款",
 	CashReasonMarginRefund:         "保证金退款",
+	CashReasonTicket:               "门票订单支付",
 }
 
 // GetReasonName 获取channel备注
