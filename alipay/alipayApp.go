@@ -28,6 +28,18 @@ const (
 	PayTypeAli = 2 // 支付宝支付方式
 )
 
+var RefundError = map[string]string{
+"AQC.SYSTEM_ERROR":				"系统错误",
+"ACQ.INVALID_PARAMETER": 		"参数无效",
+"ACQ.SELLER_BALANCE_NOT_ENOUGH": "商户的支付宝账户中无足够的资金进行撤销",
+"ACQ.REASON_TRADE_BEEN_FREEZEN": "当前交易被冻结，不允许进行撤销",
+"ACQ.SYSTEM_ERROR": 			 "系统异常",
+"ACQ.TRADE_HAS_FINISHED": 	"交易已经完结",
+"ACQ.TRADE_CANCEL_TIME_OUT": 	"超过撤销时间范围",
+"ACQ.REASON_TRADE_REFUND_FEE_ERR": "退款金额无效",
+"ACQ.CANCEL_NOT_ALLOWED": 	"交易不允许撤销",
+}
+
 var DefaultAliAppClient *AliAppClient
 
 type AliAppClient struct {
@@ -152,11 +164,14 @@ func (i *AliAppClient) Refund(refund *AliRefundRequest) (*AliRefundResponse, err
 	if err != nil || response == "" {
 		return nil, err
 	}
+
 	result := new(AliRefundResponse)
 	err = json.Unmarshal([]byte(response), result)
 	if err != nil {
 		return result, err
 	}
+	result.AliPayTradeRefund.SubMsg = RefundError[result.AliPayTradeRefund.SubCode]
+
 	return result, nil
 }
 
@@ -271,10 +286,7 @@ func (i *AliAppClient) SendToAlipay(m map[string]string, method string) (string,
 		req.Param(k, v)
 	}
 	resp, err := req.Response()
-	if err != nil {
-		println(err.Error())
-	}
-	body, err := ioutil.ReadAll(resp.Body)
+	body, _ := ioutil.ReadAll(resp.Body)
 	return string(body), err
 }
 
