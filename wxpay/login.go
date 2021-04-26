@@ -128,16 +128,16 @@ func (i *WxClient) GetLoginInfo(iv string, encryptData string, code string) (WxL
 		wxLoginInfoResult.UnionID = session.Unionid
 		return wxLoginInfoResult, nil
 	}
-	return i.DecryptWXOpenData(session.SessionKey, encryptData, iv)
+	return i.DecryptWXOpenData(session, encryptData, iv)
 }
 
-func (i *WxClient) DecryptWXOpenData(sessionKey, encryptData, iv string) (WxLoginInfoResult, error) {
+func (i *WxClient) DecryptWXOpenData(session *WxSession, encryptData, iv string) (WxLoginInfoResult, error) {
 	var wxLoginInfoResult WxLoginInfoResult
 	decodeBytes, err := base64.StdEncoding.DecodeString(encryptData)
 	if err != nil {
 		return wxLoginInfoResult, err
 	}
-	sessionKeyBytes, err := base64.StdEncoding.DecodeString(sessionKey)
+	sessionKeyBytes, err := base64.StdEncoding.DecodeString(session.SessionKey)
 	if err != nil {
 		return wxLoginInfoResult, err
 	}
@@ -154,6 +154,10 @@ func (i *WxClient) DecryptWXOpenData(sessionKey, encryptData, iv string) (WxLogi
 	}
 	if err != nil {
 		return wxLoginInfoResult, err
+	}
+	// 21.4月后解不出openid
+	if wxLoginInfoResult.OpenID == "" {
+		wxLoginInfoResult.OpenID = session.Openid
 	}
 	return wxLoginInfoResult, nil
 

@@ -14,10 +14,11 @@ import (
 type WxClient struct {
 	AppID       string
 	MchID       string
-	SecretKey   string  // 登录秘钥
-	PayKey  	string 	// 支付加签秘钥
+	SecretKey   string // 登录秘钥
+	PayKey      string // 支付加签秘钥
 	CallbackURL string
 	SubMchId    string
+	SubAppId    string
 
 	CertPEM string // cert证书
 	KeyPEM  string // 密钥证书
@@ -29,19 +30,21 @@ type WxClient struct {
 	SerialNo   string // 敏感信息加密使用的证书号
 }
 
-func InitWxClient(AppID string, MchID string, SecretKey string, PayKey string, CallbackURL string, subMchId ...string) *WxClient {
+func InitWxClient(AppID string, MchID string, SecretKey string, PayKey string, CallbackURL string, subMchId string, subAppId string) *WxClient {
 	c := &WxClient{
 		AppID:       AppID,
 		MchID:       MchID,
 		SecretKey:   SecretKey,
-		PayKey:  	PayKey,
+		PayKey:      PayKey,
 		CallbackURL: CallbackURL,
 		httpsClient: nil,
 	}
-	if len(subMchId) > 0 {
-		c.SubMchId = subMchId[0]
+	if subMchId != "" {
+		c.SubMchId = subMchId
 	}
-
+	if subAppId != "" {
+		c.SubAppId = subAppId
+	}
 	return c
 }
 
@@ -96,7 +99,11 @@ func (i *WxClient) MiniPay(charge *Charge) (map[string]string, error) {
 		return map[string]string{}, errors.New("wx app pay" + err.Error())
 	}
 	var c = make(map[string]string)
-	c["appId"] = i.AppID
+	if i.SubAppId != "" {
+		c["appId"] = i.SubAppId
+	} else {
+		c["appId"] = i.AppID
+	}
 	c["timeStamp"] = fmt.Sprintf("%d", time.Now().Unix())
 	c["nonceStr"] = RandomStr()
 	c["package"] = fmt.Sprintf("prepay_id=%s", result.PrepayID)
@@ -135,8 +142,15 @@ func (i *WxClient) WxUnifiedOrder(charge *Charge, tradeType string) (WeChatQuery
 	if i.SubMchId != "" {
 		m["sub_mch_id"] = i.SubMchId
 	}
+	if i.SubAppId != "" {
+		m["sub_appid"] = i.SubAppId
+	}
 	if charge.OpenID != "" {
-		m["openid"] = charge.OpenID
+		if i.SubAppId != "" {
+			m["sub_openid"] = charge.OpenID
+		} else {
+			m["openid"] = charge.OpenID
+		}
 	}
 	if tradeType == "NWEB" {
 		m["scene_info"] = charge.SceneInfo
@@ -154,6 +168,7 @@ func (i *WxClient) WxUnifiedOrder(charge *Charge, tradeType string) (WeChatQuery
 	m["sign"] = sign
 	*result, err = PostWechat("https://api.mch.weixin.qq.com/pay/unifiedorder", m, nil)
 	if err != nil {
+		logs.Warning(m)
 		return *result, err
 	}
 	return *result, err
