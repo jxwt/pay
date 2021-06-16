@@ -5,6 +5,7 @@ import (
 	"encoding/xml"
 	"errors"
 	"fmt"
+	"github.com/astaxie/beego/logs"
 	"github.com/jxwt/pay"
 	"github.com/shopspring/decimal"
 	"strings"
@@ -67,6 +68,7 @@ func GetAlipay(url string) (AliWebQueryResult, error) {
 	}
 	err = xml.Unmarshal(re, &xmlRe)
 	if err != nil {
+		logs.Error("get body:", string(re))
 		return xmlRe, errors.New("xml.Unmarshal: " + err.Error())
 	}
 	return xmlRe, nil

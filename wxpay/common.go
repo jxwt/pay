@@ -197,6 +197,7 @@ func PostWechat(url string, data map[string]string, h *pay.HTTPSClient) (WeChatQ
 
 	err = xml.Unmarshal(re, &xmlRe)
 	if err != nil {
+		logs.Error("get body:", string(re))
 		return xmlRe, errors.New("xml.Unmarshal: " + err.Error())
 	}
 
